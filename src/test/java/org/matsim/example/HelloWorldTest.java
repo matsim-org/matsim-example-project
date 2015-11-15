@@ -16,8 +16,34 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
+package org.matsim.example;
+
+import org.junit.Test;
+import org.matsim.api.core.v01.Scenario;
+import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.controler.Controler;
+import org.matsim.core.scenario.ScenarioUtils;
+
 /**
  * @author nagel
  *
  */
-package org.matsim.example2;
+public class HelloWorldTest {
+
+	/**
+	 * Test method for {@link org.matsim.example.HelloWorld#main(java.lang.String[])}.
+	 */
+	@Test
+	public final void testMain() {
+		Config config = ConfigUtils.createConfig() ;
+		
+		Scenario scenario = ScenarioUtils.loadScenario(config) ;
+		
+		Controler controler = new Controler( scenario ) ;
+		
+		controler.run();
+		
+	}
+
+}
