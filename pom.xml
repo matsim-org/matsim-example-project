@@ -35,6 +35,12 @@
 		<!-- use the snapshot if you want to program against the development version 
 		     (the "SNAPSHOT" means that it will be automatically updated) -->
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
