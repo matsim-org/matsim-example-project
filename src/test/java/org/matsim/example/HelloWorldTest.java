@@ -18,6 +18,7 @@
  * *********************************************************************** */
 package org.matsim.example;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
@@ -43,6 +44,7 @@ public class HelloWorldTest {
 		Controler controler = new Controler( scenario ) ;
 		
 		controler.run();
+		
 		
 	}
 
