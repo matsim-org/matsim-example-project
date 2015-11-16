@@ -18,7 +18,6 @@
  * *********************************************************************** */
 package org.matsim.example;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
@@ -38,6 +37,7 @@ public class HelloWorldTest {
 	@Test
 	public final void testMain() {
 		Config config = ConfigUtils.createConfig() ;
+		config.controler().setLastIteration(1);
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
 		
