@@ -30,6 +30,7 @@ import org.matsim.core.scenario.ScenarioUtils;
  *
  */
 public class HelloWorld {
+// a comment
 
 	public static void main(String[] args) {
 		
