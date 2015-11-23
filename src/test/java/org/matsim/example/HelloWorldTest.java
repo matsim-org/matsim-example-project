@@ -18,12 +18,14 @@
  * *********************************************************************** */
 package org.matsim.example;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
 
 /**
@@ -32,26 +34,26 @@ import org.matsim.core.scenario.ScenarioUtils;
  */
 public class HelloWorldTest {
 
-	/**
-	 * Test method for {@link org.matsim.example.HelloWorld#main(java.lang.String[])}.
-	 */
 	@Test
 	public final void testMain() {
 		try {
-		Config config = ConfigUtils.createConfig() ;
-		config.controler().setLastIteration(1);
-		
-		Scenario scenario = ScenarioUtils.loadScenario(config) ;
-		
-		Controler controler = new Controler( scenario ) ;
-		
-		controler.run();
+			Config config = ConfigUtils.createConfig() ;
+			config.controler().setLastIteration(1);
+			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+
+			Scenario scenario = ScenarioUtils.loadScenario(config) ;
+
+			Controler controler = new Controler( scenario ) ;
+
+			controler.run();
 		} catch ( Exception ee ) {
-			// fail if there was any exception during the running of the above code:
-			Assert.fail(); 
+			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+			
+			// if one catches an exception, then one needs to explicitly fail the test:
+			Assert.fail();
 		}
 
-		
+
 	}
 
 }
