@@ -41,7 +41,14 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+		
+<!-- 		Example of how to add a contrib.  Note that the version numbers need to be consistent! -->
+<!-- 		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>emissions</artifactId>
+			<version>0.7.0</version>
+		</dependency>
+ -->	</dependencies>
 
 	<build>
 		<plugins>
