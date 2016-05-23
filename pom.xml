@@ -42,7 +42,7 @@
 			<scope>test</scope>
 		</dependency>
 		
-<!-- 		Example of how to add a contrib.  Note that the version numbers need to be consistent! -->
+<!-- 		Example of how to add a contrib.  Note that the version numbers need to be consistent with the matsim version above! -->
 <!-- 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>emissions</artifactId>
