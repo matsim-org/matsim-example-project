@@ -19,7 +19,16 @@
 /**
  * Examples are collected in the package {@link tutorial}, in particular {@link tutorial.programming}.  They sit physically in the
  * matsim main repository, not on the matsim-example-project on which you are working here.  However, maven should be configured
- * such that it downloads the matsim sources as well, so you should be able to click on the package links above 
+ * such that it downloads the matsim sources as well, so you should be able to click on the package links above.  (In eclipse, this seems
+ * to be a bit flaky; in many cases, it works if you say "attach source", then start browsing around, and then it often pops up without 
+ * you having to know where it is physically located.)
+ * <br/><br/>
+ * An alternative (in eclipse): Your package exploer should have "Maven Dependencies", open that, and further matsim-0.X.Y.jar --> 
+ * tutorial --> programming .  If you have the source attachments, then you can look through code there.
+ * <br/><br/>
+ * A further alternative: "Open Type", and then Run* ; many examples are Run*Example.
+ * <br/><br/>
+ * Please let us know if this works for you or not.
  *
  */
 package org.matsim.moreexamples;
