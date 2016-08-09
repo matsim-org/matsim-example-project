@@ -43,12 +43,12 @@
 		</dependency>
 		
 <!-- 		Example of how to add a contrib.  Note that the version numbers need to be consistent with the matsim version above! -->
-<!-- 		<dependency>
+ 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
-			<artifactId>emissions</artifactId>
+			<artifactId>otfvis</artifactId>
 			<version>0.8.0</version>
 		</dependency>
- -->	</dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
