@@ -1,5 +1,5 @@
 /* *********************************************************************** *
- * project: org.matsim.*												   *
+ * project: org.matsim.*
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
@@ -16,43 +16,46 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.example;
 
-import org.matsim.api.core.v01.Scenario;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.controler.Controler;
-import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
-import org.matsim.core.scenario.ScenarioUtils;
+package org.matsim.gui;
 
-/**
- * @author nagel
- *
- */
-public class HelloWorld {
-// a comment
+import org.matsim.example.HelloWorld;
+import org.matsim.run.gui.Gui;
+
+public class MATSimGUI {
 
 	public static void main(String[] args) {
-		
-		Config config ;
-		if ( args.length==0 || args[0]=="" ) {
-			// This creates a default matsim config:
-			config = ConfigUtils.createConfig();
-			config.controler().setLastIteration(1);
-			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
-		} else {
-			config = ConfigUtils.loadConfig(args[0]) ;
-		}
-		
-
-		// This creates a default matsim scenario (which is empty):
-		Scenario scenario = ScenarioUtils.createScenario(config) ;
-
-		Controler controler = new Controler( scenario ) ;
-
-		// This indeed runs iterations, but based on an empty scenario:
-		controler.run();
-
+		Gui.show("MATSim: Bang Bang", HelloWorld.class);
 	}
 
+	/* To start this class upon double-clicking the jar-file, add the following lines to the pom.xml
+	 * and configure the mainClass correctly:
+	 * 
+	 * 
+	 		<build>
+				<plugins>
+			  	<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>playground.vsptelematics.bangbang.KNBangBangGUI</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+	 * 
+	 * and then, to create the clickable jar-file:
+	 * 
+	 * - make sure the dependencies (including MATSim-core) is maven-installed, 
+	 *   e.g. do "mvn install -DskipTests=true" for all required dependencies
+	 * - change to the directory of this project, e.g. cd /path/to/playground/vsptelematics/
+	 * - mvn clean
+	 * - mvn -Prelease
+	 * 
+	 * This will result in a zip file in the target-directory which includes the clickable jar-file.
+	 */
 }

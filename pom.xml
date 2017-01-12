@@ -34,8 +34,8 @@
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<version>0.8.1</version>
-			<!--<version>0.9.0-SNAPSHOT</version>-->
+			<!-- <version>0.8.1</version> -->
+			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -46,14 +46,14 @@
 		<dependency>
  			<groupId>org.matsim.contrib</groupId>
  			<artifactId>minibus</artifactId>
- 			<version>0.8.1</version>
-			<!--<version>0.9.0-SNAPSHOT</version>-->
+ 			<!-- <version>0.8.1</version> -->
+			<version>0.9.0-SNAPSHOT</version>
  		</dependency>
 		<dependency>
  			<groupId>org.matsim.contrib</groupId>
  			<artifactId>otfvis</artifactId>
- 			<version>0.8.1</version>
-			<!--<version>0.9.0-SNAPSHOT</version>-->
+ 			<!-- <version>0.8.1</version> -->
+			<version>0.9.0-SNAPSHOT</version>
  		</dependency>
 <!-- 		<dependency>
 			<groupId>com.github.msmobility</groupId>
@@ -94,4 +94,47 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<defaultGoal>package</defaultGoal>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/assembly-release.xml</descriptor>
+							</descriptors>
+						</configuration>
+						<executions>
+							<execution>
+								<id>make-assembly</id> <!-- this is used for inheritance merges -->
+								<phase>package</phase> <!-- bind to the packaging phase -->
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-jar-plugin</artifactId>
+							<configuration>
+								<archive>
+									<manifest>
+										<addClasspath>true</addClasspath>
+										<classpathPrefix>libs/</classpathPrefix>
+										<mainClass>org.matsim.gui.MATSimGUI</mainClass>
+									</manifest>
+								</archive>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 </project>
