@@ -2,4 +2,4 @@
 
 A small example of how to use MATSim as a library.
 
-By default, this project uses the last stable version. In order to get the development snapshot, edit `pom.xml`.
+This branch is used in the 2017 summer term class at TU Berlin, which will be turned into a public tutorial in Summer 2017.
