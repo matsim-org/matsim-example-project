@@ -13,7 +13,7 @@
 		<repository>
 			<!-- MATSim is not on Maven central -->
 			<id>matsim</id>
-			<url>http://dl.bintray.com/matsim/matsim</url>
+			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
 	</repositories>
 
