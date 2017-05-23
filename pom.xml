@@ -11,22 +11,15 @@
 
 	<repositories>
 		<repository>
-			<!-- Geotools is not on Maven central -->
-			<id>osgeo</id>
-			<name>Geotools repository</name>
-			<url>http://download.osgeo.org/webdav/geotools</url>
-		</repository>
-		<repository>
+			<!-- MATSim is not on Maven central -->
 			<id>matsim</id>
 			<url>http://dl.bintray.com/matsim/matsim</url>
 		</repository>
 		<repository>
-			<id>ojo-snapshots</id>
-			<url>http://oss.jfrog.org/libs-snapshot</url>
-		</repository>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
+			<!-- Geotools (required by MATSim) is not on Maven central -->
+			<id>osgeo</id>
+			<name>Geotools repository</name>
+			<url>http://download.osgeo.org/webdav/geotools</url>
 		</repository>
 	</repositories>
 
@@ -34,33 +27,29 @@
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<!-- <version>0.8.1</version> -->
-			<version>0.9.0-SNAPSHOT</version>
+			<version>0.9.0</version>
 		</dependency>
+
+		<!-- Include some MATSim extensions -->
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>minibus</artifactId>
+			<version>0.9.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>otfvis</artifactId>
+			<version>0.9.0</version>
+		</dependency>
+
+		<!-- Include the JUnit testing library -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
- 			<groupId>org.matsim.contrib</groupId>
- 			<artifactId>minibus</artifactId>
- 			<!-- <version>0.8.1</version> -->
-			<version>0.9.0-SNAPSHOT</version>
- 		</dependency>
-		<dependency>
- 			<groupId>org.matsim.contrib</groupId>
- 			<artifactId>otfvis</artifactId>
- 			<!-- <version>0.8.1</version> -->
-			<version>0.9.0-SNAPSHOT</version>
- 		</dependency>
-<!-- 		<dependency>
-			<groupId>com.github.msmobility</groupId>
-			<artifactId>silo</artifactId>
-			<version>master-SNAPSHOT</version>
-		</dependency>
- -->	</dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -106,8 +95,8 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
+						<id>make-assembly</id>
+						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
