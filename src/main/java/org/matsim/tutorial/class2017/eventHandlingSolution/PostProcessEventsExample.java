@@ -43,10 +43,15 @@ public class PostProcessEventsExample {
 		// creates a new instance of our event handler
 		MyCarDistanceEvaluator myCarDistanceEvaluator = new MyCarDistanceEvaluator(network);
 		
+		ActivityChainEventHandler activityChainEventHandler = new ActivityChainEventHandler();
+		events.addHandler(activityChainEventHandler);
+		
 		events.addHandler(myCarDistanceEvaluator);
 		
 		//starts to stream through the events file, please set the path accordingly
 		new MatsimEventsReader(events).readFile("C:/Users/Joschka/class2017/sampledata/output/run01/output_events.xml.gz");
+		
+		activityChainEventHandler.writeActivitestoFile("C:/Users/Joschka/class2017/sampledata/output/run01/activitychains.txt");
 		
 		int[] result = myCarDistanceEvaluator.getDistanceBins();
 		writeArrayToFile(result, "C:/Users/Joschka/class2017/sampledata/output/run01/travelbins.txt");
