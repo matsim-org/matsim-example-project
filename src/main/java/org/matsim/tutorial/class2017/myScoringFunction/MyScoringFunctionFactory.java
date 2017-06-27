@@ -20,11 +20,11 @@
 
 package org.matsim.tutorial.class2017.myScoringFunction;
 
-import org.matsim.api.core.v01.Id;
+import javax.inject.Inject;
+
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.ActivityStartEvent;
 import org.matsim.api.core.v01.events.Event;
-import org.matsim.api.core.v01.events.LinkEnterEvent;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.scoring.ScoringFunction;
@@ -34,11 +34,8 @@ import org.matsim.core.scoring.functions.CharyparNagelActivityScoring;
 import org.matsim.core.scoring.functions.CharyparNagelAgentStuckScoring;
 import org.matsim.core.scoring.functions.CharyparNagelLegScoring;
 import org.matsim.core.scoring.functions.CharyparNagelMoneyScoring;
-import org.matsim.core.scoring.functions.CharyparNagelScoringParameters;
-import org.matsim.core.scoring.functions.CharyparNagelScoringParametersForPerson;
-import org.matsim.core.scoring.functions.SubpopulationCharyparNagelScoringParameters;
-
-import javax.inject.Inject;
+import org.matsim.core.scoring.functions.ScoringParameters;
+import org.matsim.core.scoring.functions.SubpopulationScoringParameters;
 
 /**
  * A scoring function Factory that includes an event scoring and punishes people that start to work before 10 am.
@@ -48,15 +45,16 @@ public final class MyScoringFunctionFactory implements ScoringFunctionFactory {
 
 	protected Network network;
 
-	private final CharyparNagelScoringParametersForPerson params;
+	private final SubpopulationScoringParameters params;
 
 	public MyScoringFunctionFactory( final Scenario sc ) {
-		this( new SubpopulationCharyparNagelScoringParameters( sc ) , sc.getNetwork() );
+		this( new SubpopulationScoringParameters( sc ) , sc.getNetwork() );
 	}
 
 	@Inject
-	MyScoringFunctionFactory(final CharyparNagelScoringParametersForPerson params, Network network) {
+	MyScoringFunctionFactory(final SubpopulationScoringParameters params, Network network) {
 		this.params = params;
+		
 		this.network = network;
 	}
 
@@ -80,8 +78,7 @@ public final class MyScoringFunctionFactory implements ScoringFunctionFactory {
 	 */
 	@Override
 	public ScoringFunction createNewScoringFunction(Person person) {
-
-		final CharyparNagelScoringParameters parameters = params.getScoringParameters( person );
+		final ScoringParameters parameters = params.getScoringParameters( person );
 
 		SumScoringFunction sumScoringFunction = new SumScoringFunction();
 		sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters ));
