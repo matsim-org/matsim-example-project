@@ -52,8 +52,8 @@ import org.matsim.vehicles.VehicleUtils;
 import org.matsim.vehicles.Vehicles;
 
 
-public final class ParkingPopulationAgentSource implements AgentSource {
-	private static final Logger log = Logger.getLogger( ParkingPopulationAgentSource.class );
+public final class BikesharingAgentSource implements AgentSource {
+	private static final Logger log = Logger.getLogger( BikesharingAgentSource.class );
 
 	private final Population population;
 	private final AgentFactory agentFactory;
@@ -63,7 +63,7 @@ public final class ParkingPopulationAgentSource implements AgentSource {
 	private Map<Id<Vehicle>,Id<Link>> seenVehicleIds = new HashMap<>() ;
 
 	@Inject
-	public ParkingPopulationAgentSource(Population population, AgentFactory agentFactory, QSim qsim ) {
+	public BikesharingAgentSource(Population population, AgentFactory agentFactory, QSim qsim ) {
 		Vehicles vehicles = qsim.getScenario().getVehicles() ;
 		QSimConfigGroup qsimConfig = qsim.getScenario().getConfig().qsim() ;
 		

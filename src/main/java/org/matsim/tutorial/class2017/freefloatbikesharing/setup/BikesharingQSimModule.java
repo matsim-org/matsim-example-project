@@ -22,7 +22,7 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 
 
-class ParkingSearchQSimModule extends com.google.inject.AbstractModule {
+class BikesharingQSimModule extends com.google.inject.AbstractModule {
 	@Override 
 	protected void configure() {
 		bind(Mobsim.class).toProvider(QSimProvider.class);
@@ -58,7 +58,7 @@ class ParkingSearchQSimModule extends com.google.inject.AbstractModule {
 					} else {
 						bind(AgentFactory.class).to(BikesharingAgentFactory.class).asEagerSingleton(); // (**)
 					}
-					bind(ParkingPopulationAgentSource.class).asEagerSingleton();
+					bind(BikesharingAgentSource.class).asEagerSingleton();
 
 				}
 			});
@@ -68,7 +68,7 @@ class ParkingSearchQSimModule extends com.google.inject.AbstractModule {
 		public Collection<Class<? extends AgentSource>> agentSources() {
 			Collection<Class<? extends AgentSource>> result = new ArrayList<>();
 			
-			result.add(ParkingPopulationAgentSource.class);
+			result.add(BikesharingAgentSource.class);
 			return result;
 		}
 	}

@@ -17,13 +17,14 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.tutorial.class2017.freefloatbikesharing.setup;
+package org.matsim.tutorial.class2017.freefloatbikesharing;
 
 import java.util.Iterator;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Plan;
@@ -45,8 +46,10 @@ import org.matsim.contrib.parking.parkingsearch.search.ParkingSearchLogic;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.framework.MobsimTimer;
 import org.matsim.core.population.routes.NetworkRoute;
+import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.utils.misc.Time;
 import org.matsim.pt.routes.ExperimentalTransitRoute;
+import org.matsim.tutorial.class2017.freefloatbikesharing.setup.BikeSharingManager;
 import org.matsim.vehicles.Vehicle;
 
 
@@ -58,13 +61,10 @@ public class BikesharingAgentLogic implements DynAgentLogic {
 
 	public enum LastAgentActionState  {
 			
-			// we have the following cases of ending dynacts:
-			NONCARTRIP,	// non-car trip arrival: start Activity
-			CARTRIP, // car-trip arrival: add park-car activity 
-			PARKACTIVITY, // park-car activity: get next PlanElement & add walk leg to activity location
-			WALKFROMPARK ,// walk-leg to act: start next PlanElement Activity
+			NONBIKETRIP,	// non-car trip arrival: start Activity
+			BIKETRIP, // car-trip arrival: add park-car activity 
 			ACTIVITY, // ordinary activity: get next Leg, if car: go to car, otherwise add ordinary leg by other mode
-			WALKTOPARK, // walk-leg to car: add unpark activity
+			WALKTOBIKE, // walk-leg to car: add unpark activity
 			UNPARKACTIVITY // unpark activity: find the way to the next route & start leg
 	}
 	protected LastAgentActionState lastActionState;
@@ -74,16 +74,26 @@ public class BikesharingAgentLogic implements DynAgentLogic {
 	protected WalkLegFactory walkLegFactory;
 	protected MobsimTimer timer;
 	protected EventsManager events;
+	protected Id<Vehicle> currentlyAssignedBikeVehicleId = null;
+	private BikeSharingManager manager;
+	private Network network;
+	private LeastCostPathCalculator lcp;
 
 	/**
 	 * @param plan
 	 *            (always starts with Activity)
+	 * 
 	 */
-	public BikesharingAgentLogic(Plan plan, WalkLegFactory walkLegFactory, EventsManager events,  MobsimTimer timer) {
+	public BikesharingAgentLogic(Plan plan, WalkLegFactory walkLegFactory, EventsManager events,  MobsimTimer timer, BikeSharingManager manager, Network network, LeastCostPathCalculator lcp) {
 		planElemIter = plan.getPlanElements().iterator();
 		this.walkLegFactory = walkLegFactory;
 		this.timer = timer;
 		this.events = events;
+		this.manager = manager;
+		this.network = network;
+		lcp = lcp;
+		
+
 		
 		
 	}
@@ -108,7 +118,7 @@ public class BikesharingAgentLogic implements DynAgentLogic {
 	public DynAction computeNextAction(DynAction oldAction, double now) {
 		
 		switch (lastActionState){
-	
+		
 		
 		}
 		throw new RuntimeException("unreachable code");

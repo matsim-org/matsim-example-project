@@ -19,6 +19,8 @@
 
 package org.matsim.tutorial.class2017.freefloatbikesharing.setup;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.matsim.api.core.v01.Id;
@@ -38,6 +40,14 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.framework.MobsimAgent;
 import org.matsim.core.mobsim.qsim.QSim;
 import org.matsim.core.mobsim.qsim.agents.AgentFactory;
+import org.matsim.core.router.costcalculators.FreespeedTravelTimeAndDisutility;
+import org.matsim.core.router.costcalculators.OnlyTimeDependentTravelDisutility;
+import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
+import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.core.router.util.LeastCostPathCalculatorFactory;
+import org.matsim.core.router.util.TravelDisutility;
+import org.matsim.core.router.util.TravelTime;
+import org.matsim.tutorial.class2017.freefloatbikesharing.BikesharingAgentLogic;
 
 /**
  * @author jbischoff
@@ -54,17 +64,26 @@ public class BikesharingAgentFactory implements AgentFactory {
 	
 	@Inject
 	EventsManager events;
-	@Inject
 	Network network;
 	
+	@Inject
+	BikeSharingManager manager;
+	@Inject
+	Map<String, TravelTime> travelTimes;
 	private final QSim qsim;
-
+	private LeastCostPathCalculator lcp;
+	@Inject
+	Map<String, TravelDisutilityFactory> travelDisutilityFactories;
 	/**
 	 * 
 	 */
 	@Inject
-	public BikesharingAgentFactory(QSim qsim) {
+	public BikesharingAgentFactory(QSim qsim, Network network, LeastCostPathCalculatorFactory df) {
+		this.network = network;
 		this.qsim = qsim;
+		FreespeedTravelTimeAndDisutility freespeedTravelTimeAndDisutility = new FreespeedTravelTimeAndDisutility(0, 0, 0);
+		TravelDisutility carDis = new OnlyTimeDependentTravelDisutility(freespeedTravelTimeAndDisutility);
+		lcp = df.createPathCalculator(network, carDis, freespeedTravelTimeAndDisutility);
 	}
 
 	@Override
@@ -75,7 +94,7 @@ public class BikesharingAgentFactory implements AgentFactory {
 		if (startLinkId == null) {
 			throw new NullPointerException(" No start link found. Should not happen.");
 		}
-		DynAgent agent = new DynAgent(p.getId(), startLinkId, events, new BikesharingAgentLogic(p.getSelectedPlan(),walkLegFactory,events,qsim.getSimTimer()));
+		DynAgent agent = new DynAgent(p.getId(), startLinkId, events, new BikesharingAgentLogic(p.getSelectedPlan(),walkLegFactory,events,qsim.getSimTimer(),manager, network, lcp));
 		return agent;
 	}
 

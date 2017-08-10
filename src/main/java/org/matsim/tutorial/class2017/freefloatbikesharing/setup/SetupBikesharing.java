@@ -45,34 +45,30 @@ import com.google.inject.name.Names;
  *
  */
 
-public class SetupParking {
-	// TODO: create config group and make this all configurable?
+public class SetupBikesharing {
 
-	static public void installParkingModules(Controler controler) {
+	static public void installBikesharingModules(Controler controler) {
 		// No need to route car routes in Routing module in advance, as they are
 		// calculated on the fly
-		controler.getConfig().addModule(new DvrpConfigGroup());
-		final DynRoutingModule routingModuleCar = new DynRoutingModule(TransportMode.car);
+		final DynRoutingModule routingModuleBike = new DynRoutingModule(TransportMode.bike);
 		StageActivityTypes stageActivityTypesCar = new StageActivityTypes() {
 			@Override
 			public boolean isStageActivity(String activityType) {
 
-				return (activityType.equals(ParkingUtils.PARKACTIVITYTYPE));
+				return (activityType.equals("bikesharing interaction"));
 			}
 		};
-		routingModuleCar.setStageActivityTypes(stageActivityTypesCar);
-		controler.addOverridingModule(VrpTravelTimeModules.createTravelTimeEstimatorModule());
+		routingModuleBike.setStageActivityTypes(stageActivityTypesCar);
+		
+		 
 		controler.addOverridingModule(new AbstractModule() {
 			@Override
 			public void install() {
-				addRoutingModuleBinding(TransportMode.car).toInstance(routingModuleCar);
-				bind(Network.class).annotatedWith(Names.named(DvrpModule.DVRP_ROUTING)).to(Network.class).asEagerSingleton();
-				bind(ParkingSearchManager.class).to(FacilityBasedParkingManager.class).asEagerSingleton();
+				bind(BikeSharingManager.class).asEagerSingleton();
 				bind(WalkLegFactory.class).asEagerSingleton();
-				this.install(new ParkingSearchQSimModule());
-				addControlerListenerBinding().to(ParkingListener.class);
-				bind(ParkingRouter.class).to(WithinDayParkingRouter.class);
-				bind(VehicleTeleportationLogic.class).to(VehicleTeleportationToNearbyParking.class);
+
+				addRoutingModuleBinding(TransportMode.bike).toInstance(routingModuleBike);
+				this.install(new BikesharingQSimModule());
 			}
 		});
 
