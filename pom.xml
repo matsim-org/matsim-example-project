@@ -31,13 +31,13 @@
 			<version>0.9.0</version>
 		</dependency>
 
-		<!-- This is where the "tutorials" (= example code snippets) are.  Currently only the snapshot version, because the release version is not deployed (sep'17). -->
-		<dependency>
+		<!-- This is where the "tutorials" (= example code snippets) are.  Currently (sep'17) not working ... -->
+<!-- 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim-tutorial</artifactId>
-			<version>0.9.0-SNAPSHOT</version>
+			<version>0.9.0</version>
 		</dependency>
-
+ -->
 		<!-- Include some MATSim extensions -->
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
