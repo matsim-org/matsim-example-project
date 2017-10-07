@@ -16,22 +16,38 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
+package org.matsim.run;
+
+import org.matsim.api.core.v01.Scenario;
+import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.controler.Controler;
+import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
+import org.matsim.core.scenario.ScenarioUtils;
+
 /**
- * Examples are collected in the package {@link tutorial}, in particular {@link tutorial.programming}.  They sit physically in the
- * matsim main repository, not on the matsim-example-project on which you are working here.  However, maven should be configured
- * such that it downloads the matsim sources as well, so you should be able to click on the package links above.  (In eclipse, this seems
- * to be a bit flaky; in many cases, it works if you say "attach source", then start browsing around, and then it often pops up without 
- * you having to know where it is physically located.)
- * <br/><br/>
- * An alternative (in eclipse): Your package explorer should have "Maven Dependencies", open that, and further matsim-0.X.Y.jar --> 
- * tutorial --> programming .  If you have the source attachments, then you can look through code there.
- * <br/><br/>
- * A further alternative: "Open Type", and then Run* ; many examples are Run*Example.
- * <br/><br/>
- * In any case, it should <i>not</i> be necessary to explicitly download the MATSim main code.  We are not against that, we just think
- * that it is easier to rely on the maven mechanics since in particular this guarantees that the versions are consistent.
- * <br/><br/>
- * Please let us know if this works for you or not.
+ * @author nagel
  *
  */
-package org.matsim.moreexamples;
+public class RunMatsim {
+
+	public static void main(String[] args) {
+		
+		Config config ;
+		if ( args.length==0 || args[0]=="" ) {
+			config = ConfigUtils.loadConfig( "scenarios/equil/config.xml" ) ;
+			config.controler().setLastIteration(1);
+			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
+		} else {
+			config = ConfigUtils.loadConfig(args[0]) ;
+		}
+		
+		Scenario scenario = ScenarioUtils.loadScenario(config) ;
+
+		Controler controler = new Controler( scenario ) ;
+
+		controler.run();
+
+	}
+
+}
