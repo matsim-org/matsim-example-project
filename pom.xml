@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<version>0.9.0</version>
+			<version>0.10.0</version>
 		</dependency>
 
 		<!-- Include the JUnit testing library -->
