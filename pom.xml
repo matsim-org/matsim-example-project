@@ -10,28 +10,38 @@
 	<description>MATSim example project</description>
 
 	<repositories>
-		<!-- Repository for MATSim releases (MATSim is not on Maven central) -->
 		<repository>
+			<!-- Repository for MATSim releases (MATSim is not on Maven central) -->
 			<id>matsim</id>
 			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
-		<!-- This is the matsim "core": -->
 		<dependency>
+			<!-- This is the matsim "core": -->
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
 			<version>0.10.0</version>
 		</dependency>
 
-		<!-- Include the JUnit testing library -->
 		<dependency>
+			<!-- Include the JUnit testing library.  Not transitive. -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<!--MATSim test infrastructure.  Not transitive.-->
+			<groupId>org.matsim</groupId>
+			<artifactId>matsim</artifactId>
+			<type>test-jar</type>
+			<version>0.10.0</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -23,6 +23,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
+import org.matsim.core.gbl.Gbl;
 import org.matsim.core.scenario.ScenarioUtils;
 
 /**
@@ -32,22 +33,30 @@ import org.matsim.core.scenario.ScenarioUtils;
 public class RunMatsim {
 
 	public static void main(String[] args) {
+		Gbl.assertIf(args.length >=1 && args[0]!="" );
+		run(ConfigUtils.loadConfig(args[0]));
+		// makes some sense to not modify the config here but in the run method to help  with regression testing.
+	}
+	
+	static void run(Config config) {
 		
-		Config config ;
-		if ( args.length==0 || args[0]=="" ) {
-			config = ConfigUtils.loadConfig( "scenarios/equil/config.xml" ) ;
-			config.controler().setLastIteration(1);
-			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
-		} else {
-			config = ConfigUtils.loadConfig(args[0]) ;
-		}
+		// possibly modify config here
+		
+		// ---
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
-
+		
+		// possibly modify scenario here
+		
+		// ---
+		
 		Controler controler = new Controler( scenario ) ;
-
+		
+		// possibly modify controler here
+		
+		// ---
+		
 		controler.run();
-
 	}
-
+	
 }

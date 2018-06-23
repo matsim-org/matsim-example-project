@@ -16,10 +16,11 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.example;
+package org.matsim.run;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
@@ -27,28 +28,28 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.testcases.MatsimTestUtils;
 
 /**
  * @author nagel
  *
  */
 public class HelloWorldTest {
+	
+	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
 	@Test
-	public final void testMain() {
+	public final void test() {
 		try {
-			Config config = ConfigUtils.createConfig() ;
+			Config config = ConfigUtils.loadConfig( "scenarios/equil/config.xml" ) ;
+			config.controler().setWriteEventsInterval(1);
 			config.controler().setLastIteration(1);
+			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-
-			Scenario scenario = ScenarioUtils.loadScenario(config) ;
-
-			Controler controler = new Controler( scenario ) ;
-
-			controler.run();
+			RunMatsim.run( config );
 		} catch ( Exception ee ) {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
-			
+
 			// if one catches an exception, then one needs to explicitly fail the test:
 			Assert.fail();
 		}
