@@ -23,3 +23,7 @@ sequence of windows; it is important that you import as 'general project'._
 Sometimes, step 3 does not work, in particular after previously failed attempts.  Sometimes, it is possible to
 right-click to `configure->convert to maven project`.  If that fails, the best thing seems to remove all 
 pieces of the failed attempt in the directory and start over.
+
+### Import into IntelliJ
+
+... todo ...
