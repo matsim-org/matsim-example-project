@@ -10,6 +10,13 @@
 	<description>MATSim example project</description>
 
 	<repositories>
+	  <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
+		<repository>
+			<!-- Geotools is not on Maven central -->
+			<id>osgeo</id>
+			<name>Geotools repository</name>
+			<url>http://download.osgeo.org/webdav/geotools</url>
+		</repository>
 		<repository>
 			<!-- Repository for MATSim releases (MATSim is not on Maven central) -->
 			<id>matsim</id>
