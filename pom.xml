@@ -9,6 +9,14 @@
 	<name>MATSim example project</name>
 	<description>MATSim example project</description>
 
+	<properties>
+	  <!-- release> -->
+	  <matsim.version>0.10.1</matsim.version>
+
+	  <!--weekly "release":-->
+	  <!--<matsim.version>0.11.0-2019w01-SNAPSHOT</matsim.version>-->
+	</properties>
+
 	<repositories>
 	  <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
 		<repository>
@@ -22,6 +30,11 @@
 			<id>matsim</id>
 			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
+ 		<repository>
+			<!-- For MATSim snapshots: -->
+			<id>ojo-snapshots</id>
+			<url>http://oss.jfrog.org/<li></li>bs-snapshot</url>
+		</repository>	
 	</repositories>
 
 	<dependencies>
@@ -29,7 +42,7 @@
 			<!-- This is the matsim "core": -->
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<version>0.10.0</version>
+			<version>{matsim.version}</version>
 		</dependency>
 
 		<dependency>
@@ -45,9 +58,16 @@
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
 			<type>test-jar</type>
-			<version>0.10.0</version>
+			<version>{matsim.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!--to get ExamplesUtils. commented out since it is another dependency, but in general this is recommended. -->
+		<!--<dependency>-->
+		<!--	<groupId>org.matsim</groupId>-->
+		<!--	<artifactId>matsim-examples</artifactId>-->
+		<!--	<version>${matsim.version}</version>-->
+		<!--</dependency>-->
 
 	</dependencies>
 
