@@ -42,7 +42,7 @@
 			<!-- This is the matsim "core": -->
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
-			<version>{matsim.version}</version>
+			<version>${matsim.version}</version>
 		</dependency>
 
 		<dependency>
@@ -58,7 +58,7 @@
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
 			<type>test-jar</type>
-			<version>{matsim.version}</version>
+			<version>${matsim.version}</version>
 			<scope>test</scope>
 		</dependency>
 
