@@ -41,12 +41,12 @@ public class HelloWorldTest {
 	@Test
 	public final void test() {
 		try {
-			Config config = ConfigUtils.loadConfig( "scenarios/equil/config.xml" ) ;
-			config.controler().setWriteEventsInterval(1);
-			config.controler().setLastIteration(1);
-			config.controler().setOutputDirectory( utils.getOutputDirectory() );
-			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			RunMatsim.run( config );
+			String [] args = {"scenarios/equil/config.xml",
+				  "--config:controler.outputDirectory", utils.getOutputDirectory(),
+				  "--config:controler.lastIteration=1",
+				  "--config:controler.writeEventsInterval=1"
+			} ;
+			RunMatsim.main( args ) ;
 		} catch ( Exception ee ) {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 
