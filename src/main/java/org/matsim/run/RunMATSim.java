@@ -30,7 +30,7 @@ import org.matsim.core.scenario.ScenarioUtils;
  * @author nagel
  *
  */
-public class RunMATSim {
+public class RunMatsim {
 
 	public static void main(String[] args) {
 		Gbl.assertIf(args.length >=1 && args[0]!="" );
