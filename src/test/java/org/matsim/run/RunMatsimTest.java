@@ -34,7 +34,7 @@ import org.matsim.testcases.MatsimTestUtils;
  * @author nagel
  *
  */
-public class HelloWorldTest {
+public class RunMatsimTest{
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
