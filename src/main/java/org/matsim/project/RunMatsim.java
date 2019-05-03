@@ -32,7 +32,11 @@ import org.matsim.core.scenario.ScenarioUtils;
 public class RunMatsim{
 
 	public static void main(String[] args) {
-		Gbl.assertIf(args.length >=1 && args[0]!=null && !args[0].equals( "" ) );
+		if ( args.length==0 ) {
+			args = new String [] { "scenarios/equil/config.xml" } ;
+		} else {
+			Gbl.assertIf( args[0] != null && !args[0].equals( "" ) );
+		}
 
 		Config config = ConfigUtils.loadConfig( args ) ;
 		
