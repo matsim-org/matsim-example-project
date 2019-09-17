@@ -34,6 +34,7 @@ public class RunMatsim{
 	public static void main(String[] args) {
 		if ( args.length==0 ) {
 			args = new String [] { "scenarios/equil/config.xml" } ;
+			// to make sure that something is run by default; better start from MATSimGUI.
 		} else {
 			Gbl.assertIf( args[0] != null && !args[0].equals( "" ) );
 		}
