@@ -62,12 +62,51 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!--to get ExamplesUtils. commented out since it is another dependency, but in general this is recommended. -->
-		<!--<dependency>-->
-		<!--	<groupId>org.matsim</groupId>-->
-		<!--	<artifactId>matsim-examples</artifactId>-->
-		<!--	<version>${matsim.version}</version>-->
-		<!--</dependency>-->
+		<!--dependencies from here to where stated below are added as a service; they can be removed if you don't need them-->
+		<!--to get ExamplesUtils: -->
+		<dependency>
+			<groupId>org.matsim</groupId>
+			<artifactId>matsim-examples</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+
+		<!--some contribs:-->
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>minibus</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>otfvis</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>roadpricing</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>taxi</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>av</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>freight</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>bicycle</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<!--Dependencies from where stated above to here are added as a service; they can be removed if you don't need them-->
 
 	</dependencies>
 
@@ -110,7 +149,13 @@
 					<archive>
 						<manifest>
 							<mainClass>org.matsim.gui.MATSimGUI</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Specification-Vendor>org.matsim</Specification-Vendor>
+							<Implementation-Vendor>org.matsim</Implementation-Vendor>
+						</manifestEntries>
 					</archive>
 				</configuration>
 				<executions>
