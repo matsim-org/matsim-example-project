@@ -22,7 +22,11 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.matsim.core.events.EventsUtils;
+import org.matsim.core.utils.io.IOUtils;
+import org.matsim.examples.ExamplesUtils;
 import org.matsim.testcases.MatsimTestUtils;
+import org.matsim.utils.eventsfilecomparison.EventsFileComparator;
 
 /**
  * @author nagel
@@ -34,13 +38,21 @@ public class RunMatsimTest{
 
 	@Test
 	public final void test() {
+
 		try {
-			String [] args = {"scenarios/equil/config.xml",
+			String [] args = { IOUtils.extendUrl( ExamplesUtils.getTestScenarioURL( "equil" ) , "config.xml" ).toString(),
 				  "--config:controler.outputDirectory", utils.getOutputDirectory(),
-				  "--config:controler.lastIteration=1",
-				  "--config:controler.writeEventsInterval=1"
+				  "--config:controler.lastIteration=1"
 			} ;
 			RunMatsim.main( args ) ;
+			{
+				String expectedEventsFile = utils.getInputDirectory() + "/output_events.xml.gz" ;
+				String actualEventsFile = utils.getOutputDirectory() + "/output_events.xml.gz" ;
+				EventsFileComparator.Result result = EventsUtils.compareEventsFiles( expectedEventsFile, actualEventsFile );;
+				Assert.assertEquals( EventsFileComparator.Result.FILES_ARE_EQUAL, result );
+			}
+
+
 		} catch ( Exception ee ) {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 
@@ -51,4 +63,10 @@ public class RunMatsimTest{
 
 	}
 
+	@Test
+	public void main(){
+
+		Assert.fail();
+
+	}
 }

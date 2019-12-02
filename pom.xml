@@ -10,11 +10,14 @@
 	<description>MATSim example project</description>
 
 	<properties>
-	  <!-- release> -->
+		<!-- release> -->
 		<matsim.version>11.0</matsim.version>
 
-	  <!--weekly "release":-->
-	  <!--<matsim.version>0.11.0-2019w01-SNAPSHOT</matsim.version>-->
+		<!--weekly "release":-->
+		<!--<matsim.version>0.11.0-2019w01-SNAPSHOT</matsim.version>-->
+
+		<!-- snapshot> -->
+		<matsim.version>12.0-2019w48-SNAPSHOT</matsim.version>
 	</properties>
 
 	<repositories>
