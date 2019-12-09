@@ -26,4 +26,5 @@ pieces of the failed attempt in the directory and start over.
 
 ### Import into IntelliJ
 
-... todo ...
+1. download a modern version of IntelliJ.
+2. from IntelliJ: `Check out from Version Control->Git->Insert URI->Clone` 
