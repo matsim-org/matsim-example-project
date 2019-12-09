@@ -49,7 +49,7 @@ public class RunMatsimTest {
 			final String fullUrl = IOUtils.extendUrl( baseUrl, "config.xml" ).toString();
 			String [] args = {fullUrl,
 				  "--config:controler.outputDirectory", utils.getOutputDirectory(),
-				  "--config:controler.lastIteration", "2"
+				  "--config:controler.lastIteration", "1"
 			} ;
 			RunMatsim.main( args ) ;
 			{
