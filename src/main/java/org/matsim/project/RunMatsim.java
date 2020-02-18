@@ -28,11 +28,12 @@ import org.matsim.core.scenario.ScenarioUtils;
  * @author nagel
  *
  */
-//This line is added again with Eclipse!
+
+
 public class RunMatsim{
 
 	public static void main(String[] args) {
-
+System.out.println("This line is added for the 3rd time with Eclipse!");
 		Config config = ConfigUtils.loadConfig( args ) ;
 		
 		// possibly modify config here
