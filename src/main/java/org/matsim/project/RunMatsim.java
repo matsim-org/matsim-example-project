@@ -28,6 +28,7 @@ import org.matsim.core.scenario.ScenarioUtils;
  * @author nagel
  *
  */
+//This line is added with Eclipse!
 public class RunMatsim{
 
 	public static void main(String[] args) {
