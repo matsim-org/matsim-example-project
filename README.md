@@ -28,6 +28,28 @@ pieces of the failed attempt in the directory and start over.
 
 ... todo ...
 
+### Building and Running it locally
+
+You can build an executable jar-file by executing the following command:
+
+```sh
+./mvnw clean package
+```
+
+or on Windows:
+
+```sh
+mvnw.cmd clean package
+```
+
+This will download all necessary dependencies (it might take a while the first time it is run) and create a file `matsim-example-project-0.0.1-SNAPSHOT.jar` in the top directory. This jar-file can either be double-clicked to start the MATSim GUI, or executed with Java on the command line:
+
+```sh
+java -jar matsim-example.project-0.0.1-SNAPSHOT.jar
+```
+
+
+
 ### Licenses
 (The following paragraphs need to be adjusted according to the specifications of your project.)
 
