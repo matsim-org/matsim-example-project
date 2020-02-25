@@ -71,6 +71,7 @@
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim-examples</artifactId>
 			<version>${matsim.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!--some contribs:-->
