@@ -36,7 +36,7 @@
  		<repository>
 			<!-- For MATSim snapshots: -->
 			<id>ojo-snapshots</id>
-			<url>http://oss.jfrog.org/libs-snapshot</url>
+			<url>https://oss.jfrog.org/libs-snapshot</url>
 		</repository>	
 	</repositories>
 
