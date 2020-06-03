@@ -10,14 +10,18 @@
 	<description>MATSim example project</description>
 
 	<properties>
-		<!-- release> -->
-		<!-- <matsim.version>11.0</matsim.version> -->
+		<!-- release -->
+		<!-- <matsim.version>12.0</matsim.version> -->
 
-		<!--weekly "release":-->
-		<!--<matsim.version>0.11.0-2019w01-SNAPSHOT</matsim.version>-->
+		<!-- smapshot release -->
+		<!--<matsim.version>0.13.0-SNAPSHOT</matsim.version>-->
 
-		<!-- snapshot> -->
+		<!-- weekly release -->
 		<matsim.version>12.0-2019w48-SNAPSHOT</matsim.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 
 	<repositories>
@@ -119,27 +123,8 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<showWarnings>false</showWarnings>
-					<showDeprecation>false</showDeprecation>
-					<encoding>UTF-8</encoding>
-					<!-- configure initial and maximal memory for compiling -->
-					<fork>true</fork>
-					<meminitial>128m</meminitial>
-					<maxmem>512m</maxmem>
-					<compilerArguments>
-						<Xmaxwarns>4000</Xmaxwarns>
-						<Xmaxerrs>100</Xmaxerrs>
-					</compilerArguments>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.10</version>
 				<configuration>
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>
