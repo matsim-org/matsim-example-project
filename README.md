@@ -26,7 +26,13 @@ pieces of the failed attempt in the directory and start over.
 
 ### Import into IntelliJ
 
-... todo ...
+`File -> New -> Project from Version Control` paste the repository url and hit 'clone'. IntelliJ usually figures out
+that the project is a maven project. If not: `Right click on pom.xml -> import as maven project`.
+
+### Java Version
+
+The project uses Java 11. Usually a suitable SDK is packaged within IntelliJ or Eclipse. Otherwise, one must install a 
+suitable sdk manually, which is available [here](https://openjdk.java.net/)
 
 ### Building and Running it locally
 

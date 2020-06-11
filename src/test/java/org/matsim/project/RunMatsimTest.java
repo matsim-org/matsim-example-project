@@ -78,11 +78,4 @@ public class RunMatsimTest {
 
 
 	}
-
-	@Test
-	public void main(){
-
-//		Assert.fail();
-
-	}
 }
