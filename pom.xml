@@ -76,7 +76,10 @@
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim-examples</artifactId>
 			<version>${matsim.version}</version>
-			<scope>test</scope>
+<!--			<scope>test</scope>-->
+<!--			I think that having it in the "main" scope is acceptable for a "leaf" project, and makes life easier.  move the-->
+<!--			matsim-examples dependency into "test" scope if you want to make other projects dependent on your this project here. kai,-->
+<!--			jan'21-->
 		</dependency>
 
 		<!--some contribs:-->
