@@ -11,13 +11,13 @@
 
 	<properties>
 		<!-- release -->
-		<!-- <matsim.version>12.0</matsim.version> -->
+		 <!--<matsim.version>13.0</matsim.version>-->
 
-		<!-- smapshot release -->
+		<!-- smapshot -->
 		<!--<matsim.version>0.13.0-SNAPSHOT</matsim.version>-->
 
 		<!-- weekly release -->
-		<matsim.version>12.0-2019w48-SNAPSHOT</matsim.version>
+		<matsim.version>13.0-2021w10-SNAPSHOT</matsim.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -43,6 +43,16 @@
 			<id>ojo-snapshots</id>
 			<url>https://oss.jfrog.org/libs-snapshot</url>
 		</repository>	
+		<!-- for dependencies of osm-network-reader -->
+		<repository>
+			<id>topobyte</id>
+			<url>https://mvn.topobyte.de</url>
+		</repository>
+		<!-- for dependencies of osm-network-reader -->
+		<repository>
+			<id>slimjars</id>
+			<url>https://mvn.slimjars.com</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
