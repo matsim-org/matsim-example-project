@@ -14,7 +14,7 @@
 		<matsim.version>13.0</matsim.version>
 
 		<!-- smapshot -->
-		<!--<matsim.version>0.13.0-SNAPSHOT</matsim.version>-->
+		<!--<matsim.version>14.0-SNAPSHOT</matsim.version>-->
 
 		<!-- weekly release -->
 		<!--<matsim.version>13.0-2021w10-SNAPSHOT</matsim.version>-->
@@ -136,6 +136,7 @@
 	<build>
 		<plugins>
 			<plugin>
+				<!-- This plugin makes source files and javadocs available inside eclipse.  In IntelliJ, this works without plugin.-->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.10</version>
@@ -145,6 +146,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
+<!--				The maven-shade-plugin replaces the maven-assembly-plugin to configure "mvn package". The assembly-plugin regularly-->
+<!--				creates problems when GeoTools are used, which the shade-plugin does not (see-->
+<!--				https://stackoverflow.com/questions/27429097/geotools-cannot-find-hsql-epsg-db-throws-error-nosuchauthoritycodeexception/27431381#27431381)-->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.2.2</version>
@@ -157,7 +161,7 @@
 						<configuration>
 							<outputFile>${project.basedir}/${project.build.finalName}.jar</outputFile>
 							<transformers>
-								<!-- This bit sets the main class for the executable jar as you otherwise would with the assembly plugin -->
+								<!-- The following sets the main class for the executable jar as you otherwise would with the assembly plugin -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
 										<Main-Class>org.matsim.gui.MATSimGUI</Main-Class>
@@ -166,7 +170,7 @@
 										<Implementation-Version>${project.version}</Implementation-Version>
 									</manifestEntries>
 								</transformer>
-								<!-- This bit merges the various GeoTools META-INF/services files         -->
+								<!-- The following merges the various GeoTools META-INF/services files         -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 							</transformers>
 						</configuration>
