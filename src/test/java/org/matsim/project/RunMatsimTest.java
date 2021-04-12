@@ -41,7 +41,7 @@ public class RunMatsimTest {
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
-	@Test
+	@Test @Ignore("OTFVis does not work on build server")
 	public final void test() {
 
 		try {
