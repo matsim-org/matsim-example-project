@@ -17,7 +17,7 @@
 		<!--<matsim.version>14.0-SNAPSHOT</matsim.version>-->
 
 		<!-- weekly release -->
-		<!--<matsim.version>13.0-2021w10-SNAPSHOT</matsim.version>-->
+		<!--<matsim.version>14.0-2021w15-SNAPSHOT</matsim.version>-->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -35,15 +35,10 @@
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
 		<repository>
-			<!-- Repository for MATSim releases (MATSim is not on Maven central) -->
+			<!-- Repository for MATSim (MATSim is not on Maven central, releases and snapshots) -->
 			<id>matsim</id>
 			<url>https://repo.matsim.org/repository/matsim</url>
 		</repository>
- 		<repository>
-			<!-- For MATSim snapshots: -->
-			<id>ojo-snapshots</id>
-			<url>https://oss.jfrog.org/libs-snapshot</url>
-		</repository>	
 		<!-- for dependencies of osm-network-reader -->
 		<repository>
 			<id>topobyte</id>
