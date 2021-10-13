@@ -11,7 +11,7 @@
 
 	<properties>
 		<!-- release -->
-		<matsim.version>13.0</matsim.version>
+		<matsim.version>14.0-SNAPSHOT</matsim.version>
 
 		<!-- smapshot -->
 		<!--<matsim.version>14.0-SNAPSHOT</matsim.version>-->
@@ -124,7 +124,14 @@
 			<artifactId>bicycle</artifactId>
 			<version>${matsim.version}</version>
 		</dependency>
+
 		<!--Dependencies from where stated above to here are added as a service; they can be removed if you don't need them-->
+
+		<dependency>
+			<groupId>com.beust</groupId>
+			<artifactId>jcommander</artifactId>
+			<version>1.81</version>
+		</dependency>
 
 	</dependencies>
 
