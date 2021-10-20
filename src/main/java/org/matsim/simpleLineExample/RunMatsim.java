@@ -6,8 +6,12 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class RunMatsim {
     private static final Logger log = Logger.getLogger(RunMatsim.class);
@@ -17,8 +21,17 @@ public class RunMatsim {
         JCommander.newBuilder().addObject(input).build().parse(args);
         log.info("Config directory: " + input.configDir);
 
+        // -- CONFIG --
         Config config = ConfigUtils.loadConfig(input.configDir);
+
+        Path path = Paths.get(config.controler().getOutputDirectory());
+        new ConfigWriter(config).write(path.resolve("config_output.xml").toString());
+
+
+        // -- SCENARIO --
         Scenario scenario = ScenarioUtils.loadScenario(config);
+
+        // -- CONTROLER --
         Controler controler = new Controler(scenario);
 
         controler.run();

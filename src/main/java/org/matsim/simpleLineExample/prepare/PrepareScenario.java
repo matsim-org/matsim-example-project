@@ -19,13 +19,16 @@ public class PrepareScenario {
         Path outputPath = Paths.get(input.outputDir);
 
         // create network
-        CreateNetwork.writeNetwork(CreateNetwork.createNetwork(), outputPath);
+        CreateNetwork.writeNetwork(CreateNetwork.createSimpleStationNetwork(), outputPath);
 
         // create population
-        CreatePopulation.writePopulation(CreatePopulation.createPopulation(), outputPath);
+        CreatePopulation.writePopulation(CreatePopulation.createSimplePopulation(), outputPath);
 
         // create config
-        CreateConfig.writeConfig(CreateConfig.createConfig(), outputPath);
+        // CreateConfig.writeConfig(CreateConfig.modifyConfig(), outputPath);
+
+        // create vehicle types
+        CreateVehicleTypes.writeVehiclesFile(CreateVehicleTypes.create(), outputPath);
 
     }
 
