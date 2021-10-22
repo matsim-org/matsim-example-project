@@ -61,63 +61,15 @@ public class RunMatsim{
 		} else {
 			config = ConfigUtils.loadConfig( args );
 		}
-		config.global().setInsistingOnDeprecatedConfigVersion( false );
 
 		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
-		config.controler().setLastIteration( 2 );
-
-		config.qsim().setTrafficDynamics( TrafficDynamics.kinematicWaves );
-		config.qsim().setSnapshotStyle( SnapshotStyle.kinematicWaves );
-
-		final String mode2 = "abc";
-		Set<String> networkModesAsSet = CollectionUtils.stringArrayToSet( new String [] {TransportMode.car, mode2} );
 
 		// possibly modify config here
-		config.plansCalcRoute().clearTeleportedModeParams();
-		{
-			PlansCalcRouteConfigGroup.TeleportedModeParams abc = new PlansCalcRouteConfigGroup.TeleportedModeParams( TransportMode.walk );
-			abc.setTeleportedModeSpeed( 5./3.6 );
-			config.plansCalcRoute().addTeleportedModeParams( abc );
-		}
-//		{
-//			PlansCalcRouteConfigGroup.TeleportedModeParams abc = new PlansCalcRouteConfigGroup.TeleportedModeParams( "abc" );
-//			abc.setTeleportedModeSpeed( 10. );
-//			config.plansCalcRoute().addTeleportedModeParams( abc );
-//		}
-		{
-			config.plansCalcRoute().setNetworkModes( networkModesAsSet );
-		}
-		{
-			StrategyConfigGroup.StrategySettings abc = new StrategyConfigGroup.StrategySettings();
-			abc.setStrategyName( DefaultPlanStrategiesModule.DefaultStrategy.ChangeSingleTripMode );
-			abc.setWeight( 0.1 );
-			config.strategy().addStrategySettings( abc );
-		}
-		{
-			config.changeMode().setModes( networkModesAsSet.toArray(new String[0] ) );
-		}
-		{
-			PlanCalcScoreConfigGroup.ModeParams abc = new PlanCalcScoreConfigGroup.ModeParams( mode2 );
-			config.planCalcScore().addModeParams( abc );
-		}
-
-//		config.qsim().setVehiclesSource( VehiclesSource.modeVehicleTypesFromVehiclesData );
 
 		// ---
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
-		{
-			VehicleType vehicleType = VehicleUtils.createVehicleType( Id.create( mode2, VehicleType.class ) );
-			scenario.getVehicles().addVehicleType( vehicleType );
-		}
-		{
-			VehicleType vehicleType = VehicleUtils.createVehicleType( Id.create(TransportMode.car, VehicleType.class) );
-			scenario.getVehicles().addVehicleType( vehicleType );
-		}
-		for( Link link : scenario.getNetwork().getLinks().values() ){
-			link.setAllowedModes( networkModesAsSet );
-		}
-		
+
 		// possibly modify scenario here
 		
 		// ---
