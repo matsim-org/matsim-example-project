@@ -152,14 +152,17 @@ public class CreatePopulation {
             case QE:
                 originActivity = "station_entrance";
                 destinationActivity = "train_boarding";
+                break;
 
             case ZA:
                 originActivity = "train_disembarking";
                 destinationActivity = "station_exit";
+                break;
 
             case UM:
                 originActivity = "train_disembarking";
                 destinationActivity = "train_boarding";
+                break;
 
         }
 
