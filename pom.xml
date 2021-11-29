@@ -14,13 +14,13 @@
 		<matsim.version>13.0</matsim.version>
 
 		<!-- weekly release -->
-		<!--<matsim.version>14.0-2021w15-SNAPSHOT</matsim.version>-->
+<!--		<matsim.version>14.0-2021w43</matsim.version>-->
 
 		<!-- PR release -->
 		<!--		<matsim.version>13.1-PR1536</matsim.version>-->
 
 		<!-- for dependency sharing in IDE -->
-		<!--		<matsim.version>14.0-SNAPSHOT</matsim.version>-->
+<!--				<matsim.version>14.0-SNAPSHOT</matsim.version>-->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -100,6 +100,11 @@
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>otfvis</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>noise</artifactId>
 			<version>${matsim.version}</version>
 		</dependency>
 		<dependency>
