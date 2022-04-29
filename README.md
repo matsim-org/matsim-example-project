@@ -1,3 +1,12 @@
+# Optimizing Traffic Incident Management Deployment in Utah
+
+The objective of this research is to identify locations in Utah where UDOT traffic incident management team (IMT) personnel and 
+equipment will be most effectively located. This research will be based on about-to-be completed research identifying critical 
+highway facilities throughout Utah. In the Wasatch Front region, this research will be enhanced with a regional microsimulation 
+model. This microsimulation will model traffic operations during a road closure and after an IMT assists in restoring operations 
+on the road. An optimization algorithm will determine the best siting locations during AM and PM peak periods for a variety of 
+IMT fleet size options.
+
 # matsim-example-project
 
 A small example of how to use MATSim as a library.
