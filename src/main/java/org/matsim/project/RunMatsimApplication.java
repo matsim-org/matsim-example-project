@@ -22,49 +22,53 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.application.MATSimApplication;
 import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
-import org.matsim.core.scenario.ScenarioUtils;
 
 /**
  * @author nagel
  *
  */
 @CommandLine.Command( header = ":: MyScenario ::", version = "1.0")
-public class RunMatsimApplication extends MATSimApplication{
+public class RunMatsimApplication extends MATSimApplication {
+
+	public RunMatsimApplication() {
+		super("scenarios/equil/config.xml");
+	}
 
 	public static void main(String[] args) {
+		MATSimApplication.run(RunMatsimApplication.class, args);
+	}
 
-		Config config;
-		if ( args==null || args.length==0 || args[0]==null ){
-			config = ConfigUtils.loadConfig( "scenarios/equil/config.xml" );
-		} else {
-			config = ConfigUtils.loadConfig( args );
-		}
+	@Override
+	protected Config prepareConfig(Config config) {
 
 		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 
 		// possibly modify config here
 
 		// ---
-		
-		Scenario scenario = ScenarioUtils.loadScenario(config) ;
+
+		return config;
+	}
+
+	@Override
+	protected void prepareScenario(Scenario scenario) {
 
 		// possibly modify scenario here
-		
+
 		// ---
-		
-		Controler controler = new Controler( scenario ) ;
-		
+
+	}
+
+	@Override
+	protected void prepareControler(Controler controler) {
+
 		// possibly modify controler here
 
 //		controler.addOverridingModule( new OTFVisLiveModule() ) ;
 
-		
+
 		// ---
-		
-		controler.run();
 	}
-	
 }
