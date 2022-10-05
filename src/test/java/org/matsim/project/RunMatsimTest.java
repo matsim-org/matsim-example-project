@@ -42,7 +42,8 @@ public class RunMatsimTest {
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
-	@Test @Ignore("OTFVis does not work on build server")
+	@Test
+	// @Ignore("OTFVis does not work on build server") PLEASE DO NOT DO THIS.  Rather comment out OTFVis line in RunMatsim#main.  kai, oct'22
 	public final void test() {
 
 		try {
