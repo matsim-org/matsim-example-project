@@ -94,66 +94,67 @@ public class RunMatsim{
 				bind(PriceListener.class).in(Singleton.class);
 				this.addEventHandlerBinding().to(PriceBroker.class);
 				this.addEventHandlerBinding().to(PriceListener.class);
+				this.bindScoringFunctionFactory().to(CustomFactory.class);
 			}
 		});
-
-		controler.setScoringFunctionFactory(new ScoringFunctionFactory() {
-
-			@Override
-			public ScoringFunction createNewScoringFunction(Person person) {
-				SumScoringFunction sumScoringFunction = new SumScoringFunction();
-
-				// Score activities, legs, payments and being stuck
-				// with the default MATSim scoring based on utility parameters in the config file.
-				final ScoringParameters params =
-						new ScoringParameters.Builder(scenario, person).build();
-				sumScoringFunction.addScoringFunction(new SumScoringFunction.ActivityScoring() {
-
-					@Inject
-					private PriceListener priceListener;
-
-					@Override
-					public void handleFirstActivity(Activity act) {
-
-					}
-
-					@Override
-					public void handleActivity(Activity act) {
-
-					}
-
-					@Override
-					public void handleLastActivity(Activity act) {
-
-					}
-
-					@Override
-					public void finish() {
-
-					}
-
-					@Override
-					public double getScore() {
-						if (priceListener.personRecords.containsKey(person.getId())) {
-							var record = priceListener.personRecords.get(person.getId());
-							var score = record.consumptionStatus.equals("combustion") ? -10 : 10;
-							System.out.println("--------------------------------------------------------- Scoring of: " + score);
-							return score;
-						}
-						return 0;
-					}
-				});
-				sumScoringFunction.addScoringFunction(new CharyparNagelLegScoring(params, scenario.getNetwork()));
-				sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring(params));
-				sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring(params));
-				return sumScoringFunction;
-
-			}
-
-		});
-
 		
 		controler.run();
+	}
+
+	public static class CustomFactory implements ScoringFunctionFactory {
+
+		@Inject
+		private Scenario scenario;
+
+		@Inject
+		private PriceListener priceListener;
+
+		@Override
+		public ScoringFunction createNewScoringFunction(Person person) {
+			SumScoringFunction sumScoringFunction = new SumScoringFunction();
+
+			// Score activities, legs, payments and being stuck
+			// with the default MATSim scoring based on utility parameters in the config file.
+			final ScoringParameters params =
+					new ScoringParameters.Builder(scenario, person).build();
+			sumScoringFunction.addScoringFunction(new SumScoringFunction.ActivityScoring() {
+
+				@Override
+				public void handleFirstActivity(Activity act) {
+
+				}
+
+				@Override
+				public void handleActivity(Activity act) {
+
+				}
+
+				@Override
+				public void handleLastActivity(Activity act) {
+
+				}
+
+				@Override
+				public void finish() {
+
+				}
+
+				@Override
+				public double getScore() {
+					if (priceListener.personRecords.containsKey(person.getId())) {
+						var record = priceListener.personRecords.get(person.getId());
+						var score = record.consumptionStatus.equals("combustion") ? -10 : 10;
+						System.out.println("--------------------------------------------------------- Scoring of: " + score);
+						return score;
+					}
+					return 0;
+				}
+			});
+			sumScoringFunction.addScoringFunction(new CharyparNagelLegScoring(params, scenario.getNetwork()));
+			sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring(params));
+			sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring(params));
+			return sumScoringFunction;
+		}
 	}
 
 	public static class PriceBroker implements ActivityStartEventHandler, ActivityEndEventHandler {
