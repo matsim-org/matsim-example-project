@@ -141,7 +141,11 @@ public class RunMatsim{
 					for (var id : personsAtActivity) {
 						if (personRecords.containsKey(id)) {
 							var record = personRecords.get(id);
-							record.addScore(10);
+							var prevStatus = record.consumptionStatus;
+							record.notifyAboutElectricityPrice(price);
+							if (!prevStatus.equals(record.consumptionStatus)) {
+								System.out.println("Agent " + id + " has changed status to: " + record.consumptionStatus);
+							}
 						}
 					}
 				}
@@ -164,14 +168,14 @@ public class RunMatsim{
 	public static class PersonRecord {
 
 		private final double threshold;
-		private double score;
+		private String consumptionStatus = "combustion";
 
 		public PersonRecord(double threshold) {
 			this.threshold = threshold;
 		}
 
-		public void addScore(double toAdd) {
-			this.score += toAdd;
+		public void notifyAboutElectricityPrice(double price) {
+			this.consumptionStatus = price > threshold ? "combustion" : "landline";
 		}
 	}
 
