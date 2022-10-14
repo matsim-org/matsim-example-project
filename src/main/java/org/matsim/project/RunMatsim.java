@@ -20,12 +20,14 @@ package org.matsim.project;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.ActivityEndEvent;
 import org.matsim.api.core.v01.events.ActivityStartEvent;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.events.handler.ActivityEndEventHandler;
 import org.matsim.api.core.v01.events.handler.ActivityStartEventHandler;
+import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -34,6 +36,9 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.events.handler.BasicEventHandler;
 import org.matsim.core.scenario.ScenarioUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author nagel
@@ -120,6 +125,8 @@ public class RunMatsim{
 
 	public static class PriceListener implements BasicEventHandler {
 
+		private final Set<Id<Person>> personsAtActivity = new HashSet<>();
+
 		@Override
 		public void handleEvent(Event event) {
 			if (ElectricityPriceEvent.TYPE.equals(event.getEventType())) {
@@ -130,6 +137,12 @@ public class RunMatsim{
 				if (price % 10 == 0) {
 					System.out.println("I have received a price event. The price is: " + price);
 				}
+			} else if (ActivityEndEvent.EVENT_TYPE.equals(event.getEventType())) {
+				var actEndEvent = (ActivityEndEvent)event;
+				personsAtActivity.remove(actEndEvent.getPersonId());
+			} else if (ActivityStartEvent.EVENT_TYPE.equals(event.getEventType())) {
+				var actStartEvent = (ActivityStartEvent)event;
+				personsAtActivity.add(actStartEvent.getPersonId());
 			}
 		}
 
