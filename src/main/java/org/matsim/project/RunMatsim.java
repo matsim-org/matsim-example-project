@@ -27,6 +27,7 @@ import org.matsim.api.core.v01.events.ActivityStartEvent;
 import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.events.handler.ActivityEndEventHandler;
 import org.matsim.api.core.v01.events.handler.ActivityStartEventHandler;
+import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -36,6 +37,13 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.events.handler.BasicEventHandler;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.scoring.ScoringFunction;
+import org.matsim.core.scoring.ScoringFunctionFactory;
+import org.matsim.core.scoring.SumScoringFunction;
+import org.matsim.core.scoring.functions.CharyparNagelAgentStuckScoring;
+import org.matsim.core.scoring.functions.CharyparNagelLegScoring;
+import org.matsim.core.scoring.functions.CharyparNagelMoneyScoring;
+import org.matsim.core.scoring.functions.ScoringParameters;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,6 +97,61 @@ public class RunMatsim{
 			}
 		});
 
+		controler.setScoringFunctionFactory(new ScoringFunctionFactory() {
+
+			@Override
+			public ScoringFunction createNewScoringFunction(Person person) {
+				SumScoringFunction sumScoringFunction = new SumScoringFunction();
+
+				// Score activities, legs, payments and being stuck
+				// with the default MATSim scoring based on utility parameters in the config file.
+				final ScoringParameters params =
+						new ScoringParameters.Builder(scenario, person).build();
+				sumScoringFunction.addScoringFunction(new SumScoringFunction.ActivityScoring() {
+
+					@Inject
+					private PriceListener priceListener;
+
+					@Override
+					public void handleFirstActivity(Activity act) {
+
+					}
+
+					@Override
+					public void handleActivity(Activity act) {
+
+					}
+
+					@Override
+					public void handleLastActivity(Activity act) {
+
+					}
+
+					@Override
+					public void finish() {
+
+					}
+
+					@Override
+					public double getScore() {
+						if (priceListener.personRecords.containsKey(person.getId())) {
+							var record = priceListener.personRecords.get(person.getId());
+							var score = record.consumptionStatus.equals("combustion") ? -10 : 10;
+							System.out.println("--------------------------------------------------------- Scoring of: " + score);
+							return score;
+						}
+						return 0;
+					}
+				});
+				sumScoringFunction.addScoringFunction(new CharyparNagelLegScoring(params, scenario.getNetwork()));
+				sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring(params));
+				sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring(params));
+				return sumScoringFunction;
+
+			}
+
+		});
+
 		
 		controler.run();
 	}
@@ -108,7 +171,6 @@ public class RunMatsim{
 			if (newPrice != nextPriceAtLeastZero) {
 
 				electricityPrice = nextPriceAtLeastZero;
-				System.out.println("------------------------------------------------ count is: " + electricityPrice);
 				eventsManager.processEvent(new ElectricityPriceEvent(event.getTime(), electricityPrice));
 			}
 		}
@@ -116,7 +178,6 @@ public class RunMatsim{
 		@Override
 		public void handleEvent(ActivityStartEvent event) {
 			electricityPrice++;
-			System.out.println("------------------------------------------------ count is: " + electricityPrice);
 			eventsManager.processEvent(new ElectricityPriceEvent(event.getTime(), electricityPrice));
 		}
 
@@ -144,8 +205,9 @@ public class RunMatsim{
 							var record = personRecords.get(id);
 							var prevStatus = record.consumptionStatus;
 							record.notifyAboutElectricityPrice(price);
+							//System.out.println("after notify, price:" + price + ", threshold: " + record.threshold);
 							if (!prevStatus.equals(record.consumptionStatus)) {
-								System.out.println("Agent " + id + " has changed status to: " + record.consumptionStatus);
+								System.out.println("Agent " + id + " has changed status to: " + record.consumptionStatus + " current price is: " + price);
 							}
 						}
 					}
@@ -156,7 +218,8 @@ public class RunMatsim{
 			} else if (ActivityStartEvent.EVENT_TYPE.equals(event.getEventType())) {
 				var actStartEvent = (ActivityStartEvent)event;
 				personsAtActivity.add(actStartEvent.getPersonId());
-				personRecords.computeIfAbsent(actStartEvent.getPersonId(), id -> new PersonRecord(20));
+				//var individualThreshold = personRecords.size();
+				personRecords.computeIfAbsent(actStartEvent.getPersonId(), id -> new PersonRecord(30));
 			}
 		}
 
