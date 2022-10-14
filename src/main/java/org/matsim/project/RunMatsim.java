@@ -37,7 +37,9 @@ import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.events.handler.BasicEventHandler;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -126,6 +128,7 @@ public class RunMatsim{
 	public static class PriceListener implements BasicEventHandler {
 
 		private final Set<Id<Person>> personsAtActivity = new HashSet<>();
+		private final Map<Id<Person>, PersonRecord> personRecords = new HashMap<>();
 
 		@Override
 		public void handleEvent(Event event) {
@@ -135,7 +138,12 @@ public class RunMatsim{
 				var price = epe.getPrice();
 
 				if (price % 10 == 0) {
-					System.out.println("I have received a price event. The price is: " + price);
+					for (var id : personsAtActivity) {
+						if (personRecords.containsKey(id)) {
+							var record = personRecords.get(id);
+							record.addScore(10);
+						}
+					}
 				}
 			} else if (ActivityEndEvent.EVENT_TYPE.equals(event.getEventType())) {
 				var actEndEvent = (ActivityEndEvent)event;
@@ -143,12 +151,27 @@ public class RunMatsim{
 			} else if (ActivityStartEvent.EVENT_TYPE.equals(event.getEventType())) {
 				var actStartEvent = (ActivityStartEvent)event;
 				personsAtActivity.add(actStartEvent.getPersonId());
+				personRecords.computeIfAbsent(actStartEvent.getPersonId(), id -> new PersonRecord(20));
 			}
 		}
 
 		@Override
 		public void reset(int iteration) {
 			BasicEventHandler.super.reset(iteration);
+		}
+	}
+
+	public static class PersonRecord {
+
+		private final double threshold;
+		private double score;
+
+		public PersonRecord(double threshold) {
+			this.threshold = threshold;
+		}
+
+		public void addScore(double toAdd) {
+			this.score += toAdd;
 		}
 	}
 
