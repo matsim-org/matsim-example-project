@@ -18,11 +18,10 @@
  * *********************************************************************** */
 package org.matsim.project;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.events.EventsUtils;
@@ -72,7 +71,7 @@ public class RunMatsimTest {
 			}
 
 		} catch ( Exception ee ) {
-			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+			LogManager.getLogger(this.getClass() ).fatal("there was an exception: \n" + ee ) ;
 
 			// if one catches an exception, then one needs to explicitly fail the test:
 			Assert.fail();

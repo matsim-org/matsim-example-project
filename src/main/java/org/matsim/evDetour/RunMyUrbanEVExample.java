@@ -41,24 +41,33 @@ package org.matsim.evDetour;
  *                                                                         *
  * *********************************************************************** */
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.events.Event;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.ev.EvConfigGroup;
 import org.matsim.contrib.ev.EvModule;
 import org.matsim.contrib.ev.fleet.ElectricVehicleSpecifications;
+import org.matsim.contrib.otfvis.OTFVisLiveModule;
+import org.matsim.core.api.experimental.events.TeleportationArrivalEvent;
+import org.matsim.core.api.experimental.events.handler.TeleportationArrivalEventHandler;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.core.config.groups.QSimConfigGroup;
+import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.events.handler.BasicEventHandler;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.vehicles.Vehicle;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.VehicleUtils;
 import org.matsim.vehicles.VehiclesFactory;
+import playground.vsp.ev.RunUrbanEVExample;
 import playground.vsp.ev.UrbanEVConfigGroup;
 import playground.vsp.ev.UrbanEVModule;
 
@@ -73,11 +82,8 @@ import java.util.Map;
  * At the beginning of each iteration, the consumption is estimated. Charging is planned to take place during the latest possible activity in the agent's plan
  * that fits certain criteria (ActivityType and minimum duration) and takes place before the estimated SOC drops below a defined threshold.
  */
-public class RunUrbanEVExample {
-
-	static final double CAR_BATTERY_CAPACITY_kWh = 20.;
-	static final double CAR_INITIAL_SOC = 0.5;
-
+public class RunMyUrbanEVExample{
+	private static final Logger log = LogManager.getLogger(RunMyUrbanEVExample.class );
 	public static void main(String[] args) {
 		EvConfigGroup evConfigGroup = new EvConfigGroup();
 		evConfigGroup.timeProfiles = true;
@@ -87,74 +93,36 @@ public class RunUrbanEVExample {
 				args[0] :
 				"test/input/org/matsim/evDetour/chessboard-config.xml";
 
+
 		Config config = ConfigUtils.loadConfig(pathToConfig, evConfigGroup);
 		config.qsim().setVehiclesSource(QSimConfigGroup.VehiclesSource.fromVehiclesData);
+		RunUrbanEVExample.prepareConfig(config);
+		// (if you need to change anything in the static RunUrbanEVExample methods, you need to inline them.  refactor --> inline method.)
 
-		prepareConfig(config);
+		// ---
+
 		Scenario scenario = ScenarioUtils.loadScenario(config);
-		createAndRegisterPersonalCarAndBikeVehicles(scenario);
-		Controler controler = prepareControler(scenario);
+		RunUrbanEVExample.prepareScenario( scenario );
+
+		// ---
+
+		Controler controler = RunUrbanEVExample.prepareControler(scenario );
+
+		controler.addOverridingModule( new AbstractModule(){
+			@Override public void install(){
+				this.addEventHandlerBinding().toInstance( new TeleportationArrivalEventHandler(){
+					@Override public void handleEvent( TeleportationArrivalEvent event ){
+						log.info( event );
+						// (the "travelled" event)
+					}
+				} );
+			}
+		} );
+
+		controler.addOverridingModule( new OTFVisLiveModule() );
+		// (this switches on the visualizer.  comment out if not needed)
 
 		controler.run();
 	}
 
-	public static Controler prepareControler(Scenario scenario) {
-		Controler controler = new Controler(scenario);
-		//plug in UrbanEVModule
-		controler.addOverridingModule(new UrbanEVModule());
-		//register EV qsim components
-		controler.configureQSimComponents(components -> components.addNamedComponent(EvModule.EV_COMPONENT));
-		return controler;
-	}
-
-	public static void prepareConfig(Config config) {
-		UrbanEVConfigGroup evReplanningCfg = new UrbanEVConfigGroup();
-		config.addModule(evReplanningCfg);
-		evReplanningCfg.setCriticalSOC(0.4);
-
-		//TODO actually, should also work with all AccessEgressTypes but we have to check (write JUnit test)
-		config.plansCalcRoute().setAccessEgressType(PlansCalcRouteConfigGroup.AccessEgressType.none);
-
-		//register charging interaction activities for car
-		config.planCalcScore()
-				.addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams(TransportMode.car
-						+ UrbanVehicleChargingHandler.PLUGOUT_INTERACTION).setScoringThisActivityAtAll(false));
-		config.planCalcScore()
-				.addActivityParams(new PlanCalcScoreConfigGroup.ActivityParams(
-						TransportMode.car + UrbanVehicleChargingHandler.PLUGIN_INTERACTION).setScoringThisActivityAtAll(
-						false));
-	}
-
-	static void createAndRegisterPersonalCarAndBikeVehicles(Scenario scenario) {
-		VehiclesFactory vehicleFactory = scenario.getVehicles().getFactory();
-
-		for (Person person : scenario.getPopulation().getPersons().values()) {
-
-			VehicleType carVehicleType = vehicleFactory.createVehicleType(Id.create(person.getId().toString(),
-					VehicleType.class)); //TODO should at least have a suffix "_car"
-			VehicleUtils.setHbefaTechnology(carVehicleType.getEngineInformation(), "electricity");
-			VehicleUtils.setEnergyCapacity(carVehicleType.getEngineInformation(), CAR_BATTERY_CAPACITY_kWh);
-			ElectricVehicleSpecifications.setChargerTypes(carVehicleType.getEngineInformation(), Arrays.asList("a", "b", "default"));
-			scenario.getVehicles().addVehicleType(carVehicleType);
-			Vehicle carVehicle = vehicleFactory.createVehicle(VehicleUtils.createVehicleId(person, TransportMode.car),
-					carVehicleType);
-			ElectricVehicleSpecifications.setInitialSoc(carVehicle, CAR_INITIAL_SOC);
-			scenario.getVehicles().addVehicle(carVehicle);
-
-			VehicleType bikeVehicleType = vehicleFactory.createVehicleType(
-					Id.create(person.getId().toString() + "_bike", VehicleType.class));
-			Vehicle bikeVehicle = vehicleFactory.createVehicle(VehicleUtils.createVehicleId(person, TransportMode.bike),
-					bikeVehicleType);
-
-			scenario.getVehicles().addVehicleType(bikeVehicleType);
-			scenario.getVehicles().addVehicle(bikeVehicle);
-
-			Map<String, Id<Vehicle>> mode2Vehicle = new HashMap<>();
-			mode2Vehicle.put(TransportMode.car, carVehicle.getId());
-			mode2Vehicle.put(TransportMode.bike, bikeVehicle.getId());
-
-			//override the attribute - we assume to need car and bike only
-			VehicleUtils.insertVehicleIdsIntoAttributes(person, mode2Vehicle);
-		}
-	}
 }
