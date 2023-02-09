@@ -11,13 +11,13 @@
 
 	<properties>
 		<!-- release -->
-		<matsim.version>14.0</matsim.version>
+<!--		<matsim.version>15.0-2023w03</matsim.version>-->
 
 		<!-- PR (= pull request) release -->
-		<!--		<matsim.version>13.1-PR1536</matsim.version> -->
+		<matsim.version>15.0-PR2405</matsim.version>
 
 		<!-- for dependency sharing in IDE -->
-<!--				<matsim.version>15.0-SNAPSHOT</matsim.version>-->
+<!--		<matsim.version>15.0-SNAPSHOT</matsim.version>-->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -139,6 +139,11 @@
 			<artifactId>application</artifactId>
 			<version>${matsim.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>vsp</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
 
 		<!--Dependencies from where stated above to here are added as a service; they can be removed if you don't need them-->
 
@@ -197,6 +202,14 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>16</source>
+					<target>16</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
