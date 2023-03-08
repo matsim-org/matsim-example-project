@@ -10,14 +10,10 @@
 	<description>MATSim example project</description>
 
 	<properties>
-		<!-- release -->
-<!--		<matsim.version>15.0-2023w03</matsim.version>-->
-
-		<!-- PR (= pull request) release -->
-		<matsim.version>15.0-PR2405</matsim.version>
-
-		<!-- for dependency sharing in IDE -->
-<!--		<matsim.version>15.0-SNAPSHOT</matsim.version>-->
+		<!-- Options: stable build based on weekly (e.g. 15.0-PR2344), PR-based (e.g. 15.0-2023w01) or official (e.g. 14.0) releases -->
+		<matsim.version>15.0-2023w09</matsim.version>
+		<!--<matsim.version>15.0-PR2405</matsim.version>-->
+		<!--<matsim.version>15.0-SNAPSHOT</matsim.version>-->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
