@@ -26,4 +26,4 @@ jobs:
           cache: 'maven'
 
       - name: Run mvn verify
-        run: mvn -B verify
+        run: mvn -B verify -DdisableXmlReport=true
