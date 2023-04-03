@@ -11,7 +11,7 @@
 
 	<properties>
 		<!-- Options: stable build based on weekly (e.g. 15.0-PR2344), PR-based (e.g. 15.0-2023w01) or official (e.g. 14.0) releases -->
-		<matsim.version>15.0-2023w13</matsim.version>
+		<matsim.version>15.0-2023w14</matsim.version>
 		<!--<matsim.version>15.0-PR2405</matsim.version>-->
 		<!--<matsim.version>15.0-SNAPSHOT</matsim.version>-->
 
