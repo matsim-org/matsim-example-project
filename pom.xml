@@ -85,44 +85,9 @@
 		<!--some contribs:-->
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
-			<artifactId>minibus</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>otfvis</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>noise</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>roadpricing</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>taxi</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
 			<artifactId>av</artifactId>
 			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>freight</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>bicycle</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>emissions</artifactId>
