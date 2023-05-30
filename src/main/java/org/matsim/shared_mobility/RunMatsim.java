@@ -16,7 +16,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.project;
+package org.matsim.shared_mobility;
 
 import com.google.inject.internal.asm.$Type;
 import org.matsim.api.core.v01.Id;
