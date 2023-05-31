@@ -4,6 +4,8 @@ import org.apache.commons.configuration.ConfigurationUtils;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.taxi.run.MultiModeTaxiConfigGroup;
+import org.matsim.contrib.taxi.run.TaxiControlerCreator;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.QSimConfigGroup.StarttimeInterpretation;
@@ -21,28 +23,29 @@ public class Main {
 		
 		String filename = "scenarios/siouxfalls-2014/config.xml";
 		
-		Config config = ConfigUtils.loadConfig(filename,  new DvrpConfigGroup());
+		Config config = ConfigUtils.loadConfig(filename,  new DvrpConfigGroup(), new MultiModeTaxiConfigGroup());
 		config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 		config.controler().setLastIteration(1);
 		config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 		
-		Scenario scenario = ScenarioUtils.loadScenario(config);
-		
-		
-		VehicleType avType = VehicleUtils.createVehicleType(Id.create("autonomousVehicleType", VehicleType.class ) );
-		avType.setFlowEfficiencyFactor(2.0);
-		scenario.getVehicles().addVehicleType(avType);
+		/*
+		 * Scenario scenario = ScenarioUtils.loadScenario(config);
+		 * 
+		 * 
+		 * VehicleType avType =
+		 * VehicleUtils.createVehicleType(Id.create("autonomousVehicleType",
+		 * VehicleType.class ) ); avType.setFlowEfficiencyFactor(2.0);
+		 * scenario.getVehicles().addVehicleType(avType);
+		 * 
+		 * for (int i = 0; i < scenario.getPopulation().getPersons().size(); i++) {
+		 * //agents with AV Id<Vehicle> vid = Id.createVehicleId("AV_" + i); Vehicle v =
+		 * scenario.getVehicles().getFactory().createVehicle(vid, avType);
+		 * scenario.getVehicles().addVehicle(v); }
+		 * 
+		 * Controler controler = new Controler(scenario);
+		 */
 
-		for (int i = 0; i < scenario.getPopulation().getPersons().size(); i++) {
-			//agents with AV
-			Id<Vehicle> vid = Id.createVehicleId("AV_" + i);
-			Vehicle v = scenario.getVehicles().getFactory().createVehicle(vid, avType);
-			scenario.getVehicles().addVehicle(v);
-		}
-		
-		Controler controler = new Controler(scenario);
-
-		controler.run();
+		TaxiControlerCreator.createControler(config, false).run();
 
 	}
 

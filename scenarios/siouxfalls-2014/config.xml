@@ -3,17 +3,75 @@
 
 <config>
 	
+	<module name="dvrp">
+		<!-- Mode of which the network will be used for routing vehicles, calculating trave times etc. (fleet operator's perspective).
+					If null, no mode filtering is done; the standard network (Scenario.getNetwork()) is used - usually, car -->
+		<param name="networkModes" value="car"/>
+	</module>
+
+	<module name="multiModeTaxi">
+		<parameterset type="taxi">
+
+			<param name="breakIfNotAllRequestsServed" value="false"/>
+
+			<param name="changeStartLinkToLastLinkInSchedule" value="true"/>
+
+			<!-- If false, the drop-off location remains unknown to the optimizer and
+				scheduler until the end of pickup -->
+			<param name="destinationKnown" value="false"/>
+
+			<!-- If true, detailed hourly taxi stats are dumped after each iteration. -->
+			<param name="detailedStats" value="true"/>
+
+			<!-- Typically, 60 seconds -->
+			<param name="dropoffDuration" value="60.0"/>
+
+			<!-- If true, vehicles are (GPS-like) monitored while moving. This helps
+				in getting more accurate estimates on the time of arrival. Online tracking
+				is necessary for vehicle diversion. -->
+			<param name="onlineVehicleTracker" value="false"/>
+
+			<!-- Typically, 120 seconds -->
+			<param name="pickupDuration" value="120.0"/>
+
+			<!-- An XML file specifying the taxi fleet. The file format according to
+				dvrp_vehicles_v1.dtd -->
+			<!-- To create your own vehicles, see org.matsim.contrib.av.vehicles.CreateTaxiVehicles  -->
+			<param name="taxisFile" value="vehicle_100.xml"/>
+			<!--  param name="taxisFile" value="taxis_2000.xml" /  -->
+
+			<!-- If true, time profiles of vehicle statuses (i.e. current task type)
+				and the number of unplanned requests -->
+			<param name="timeProfiles" value="true"/>
+
+			<!-- If true, vehicles can be diverted during empty trips. Requires online
+				tracking. -->
+			<param name="vehicleDiversion" value="false"/>
+
+			<parameterset type="RuleBasedTaxiOptimizer"/>
+
+			<parameterset type="taxifare">
+				<!-- transport mode for which this fare applies. Default: taxi -->
+				<param name="basefare" value="0.5"/>
+				<!-- Daily subscription fee (fee = positive value) -->
+				<param name="dailySubscriptionFee" value="0.0"/>
+				<!-- taxi fare per meter (fee = positive value) -->
+				<param name="distanceFare_m" value="0.0002"/>
+				<!-- taxi fare per hour (fee = positive value) -->
+				<param name="timeFare_h" value="3.6"/>
+				<!-- Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
+				<param name="minFarePerTrip" value="2.0"/>
+			</parameterset>
+		</parameterset>
+	</module>
+
+	
 	<module name="network">
 		<param name="inputNetworkFile" value="Siouxfalls_network_PT.xml" />
 	</module>
 
 	<module name="plans">
 		<param name="inputPlansFile" value="Siouxfalls_population.xml.gz" />
-	</module>
-	
-	<module name="facilities" >
-		<param name="inputFacilitiesFile" value="Siouxfalls_facilities.xml.gz" />
-		<param name="facilitiesSource" value="fromFile"/>
 	</module>
 	
 	<module name="controler">
@@ -109,7 +167,7 @@
 	</module>
 	
 	<module name="strategy">
-		<param name="maxAgentPlanMemorySize" value="6" /> <!-- 0 means unlimited -->
+		<param name="maxAgentPlanMemorySize" value="5" /> <!-- 0 means unlimited -->
 
 		<parameterset type="strategysettings">
 			<param name="strategyName" value="ChangeExpBeta"/>
@@ -140,43 +198,5 @@
 	<module name="TimeAllocationMutator" >
 		<param name="mutationRange" value="3600.00" />
 	</module>
-
-<!-- ====================================================================== -->
-
-	<module name="transitRouter" >
-
-		<!-- additional time the router allocates when a line switch happens. Can be interpreted as a 'safety' time that agents need to safely transfer from one line to another -->
-		<param name="additionalTransferTime" value="0.0" />
-
-		<!-- step size to increase searchRadius if no stops are found -->
-		<param name="extensionRadius" value="500.0" />
-
-		<!-- maximum beeline distance between stops that agents could transfer to by walking -->
-		<param name="maxBeelineWalkConnectionDistance" value="300.0" />
-
-		<!-- the radius in which stop locations are searched, given a start or target coordinate -->
-		<param name="searchRadius" value="1500.0" />
-	</module>
-
-	
-	<module name="subtourModeChoice" >
-
-		<!-- Defines the chain-based modes, seperated by commas -->
-		<param name="chainBasedModes" value="car" />
-
-		<!-- Defines whether car availability must be considered or not. A agent has no car only if it has no license, or never access to a car -->
-		<param name="considerCarAvailability" value="true" />
-
-		<!-- Defines all the modes available, including chain-based modes, seperated by commas -->
-		<param name="modes" value="car,pt,walk" />
-	</module>
-   
-  	<module name="transit">
-  	  	<param name="useTransit" value="true" />
-  	  		<param name="transitScheduleFile" value="Siouxfalls_transitSchedule.xml" />
- 		<param name="vehiclesFile" value="Siouxfalls_vehicles.xml" />
-  	 	<param name="transitModes" value="pt,bus" />
-  	</module>
-	
 	
 </config>
