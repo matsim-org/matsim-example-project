@@ -4,7 +4,10 @@ import org.apache.commons.configuration.ConfigurationUtils;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpModule;
+import org.matsim.contrib.dvrp.run.DvrpQSimComponents;
 import org.matsim.contrib.taxi.run.MultiModeTaxiConfigGroup;
+import org.matsim.contrib.taxi.run.MultiModeTaxiModule;
 import org.matsim.contrib.taxi.run.TaxiControlerCreator;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -24,29 +27,31 @@ public class Main {
 		String test = "scenarios/siouxfalls-2014/test/config.xml";
 		String filename = "scenarios/siouxfalls-2014/config.xml";
 		
-		Config config = ConfigUtils.loadConfig(filename,  new DvrpConfigGroup(), new MultiModeTaxiConfigGroup());
+		Config config = ConfigUtils.loadConfig(test,  new DvrpConfigGroup(), new MultiModeTaxiConfigGroup());
 		config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 		config.controler().setLastIteration(0);
 		config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 		
-		/*
-		 * Scenario scenario = ScenarioUtils.loadScenario(config);
-		 * 
-		 * 
-		 * VehicleType avType =
-		 * VehicleUtils.createVehicleType(Id.create("autonomousVehicleType",
-		 * VehicleType.class ) ); avType.setFlowEfficiencyFactor(2.0);
-		 * scenario.getVehicles().addVehicleType(avType);
-		 * 
-		 * for (int i = 0; i < scenario.getPopulation().getPersons().size(); i++) {
-		 * //agents with AV Id<Vehicle> vid = Id.createVehicleId("AV_" + i); Vehicle v =
-		 * scenario.getVehicles().getFactory().createVehicle(vid, avType);
-		 * scenario.getVehicles().addVehicle(v); }
-		 * 
-		 * Controler controler = new Controler(scenario);
-		 */
-
-		TaxiControlerCreator.createControler(config, false).run();
+		
+		  Scenario scenario = ScenarioUtils.loadScenario(config);
+		  
+		  
+		  VehicleType avType = VehicleUtils.createVehicleType(Id.create("autonomousVehicleType",VehicleType.class ) );
+		  avType.setFlowEfficiencyFactor(2.0);
+		  scenario.getVehicles().addVehicleType(avType);
+		  
+		  for (int i = 0; i < scenario.getPopulation().getPersons().size(); i++) {
+		  //agents on lower route get AVs as vehicles, agents on upper route keep a standard vehicle (= default, if nothing is set)
+		  Id<Vehicle> vid = Id.createVehicleId("AV_" + i); 
+		  Vehicle v = scenario.getVehicles().getFactory().createVehicle(vid, avType);
+		  scenario.getVehicles().addVehicle(v); }
+		  
+		  Controler controler = new Controler(scenario);
+		  controler.addOverridingModule(new DvrpModule());
+		  controler.addOverridingModule(new MultiModeTaxiModule());
+		  controler.configureQSimComponents(DvrpQSimComponents.activateAllModes(MultiModeTaxiConfigGroup.get(config)));
+		  controler.run();
+		 
 
 	}
 
