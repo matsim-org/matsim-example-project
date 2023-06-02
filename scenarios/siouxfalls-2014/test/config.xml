@@ -71,7 +71,7 @@
 	</module>
 
 	<module name="plans">
-		<param name="inputPlansFile" value="Siouxfalls_population.xml.gz" />
+		<param name="inputPlansFile" value="Siouxfalls_population.xml" />
 	</module>
 	
 	<module name="controler">
@@ -136,6 +136,12 @@
 			<param name="marginalUtilityOfTraveling_util_hr" value="-1.14" />
 			<param name="constant" value="0.0"/>
 			<param name="marginalUtilityOfDistance_util_m" value="0.0"/>
+		</parameterset>
+			<parameterset type="modeParams">
+			<param name="mode" value="bike"/>
+			<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+			<param name="constant" value="0.0"/>
+			<param name="marginalUtilityOfDistance_util_m" value="-0.0002"/>
 		</parameterset>
 
 		<parameterset type="activityParams">

@@ -126,6 +126,12 @@
 			<param name="monetaryDistanceRate" value="-0.0004"/>
 		</parameterset>
 		<parameterset type="modeParams">
+			<param name="mode" value="bike"/>
+			<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+			<param name="constant" value="-0.362"/>
+			<param name="monetaryDistanceRate" value="-0.0002"/>
+		</parameterset>
+		<parameterset type="modeParams">
 			<param name="mode" value="pt"/>
 			<param name="marginalUtilityOfTraveling_util_hr" value="-0.18" />
 			<param name="monetaryDistanceRate" value="0.0"/>

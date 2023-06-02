@@ -21,11 +21,12 @@ public class Main {
 		
 		// shared autonomous mobilty main class 
 		
+		String test = "scenarios/siouxfalls-2014/test/config.xml";
 		String filename = "scenarios/siouxfalls-2014/config.xml";
 		
 		Config config = ConfigUtils.loadConfig(filename,  new DvrpConfigGroup(), new MultiModeTaxiConfigGroup());
 		config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
-		config.controler().setLastIteration(1);
+		config.controler().setLastIteration(0);
 		config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 		
 		/*
