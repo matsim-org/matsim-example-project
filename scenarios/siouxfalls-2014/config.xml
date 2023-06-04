@@ -8,62 +8,97 @@
 					If null, no mode filtering is done; the standard network (Scenario.getNetwork()) is used - usually, car -->
 		<param name="networkModes" value="car"/>
 	</module>
+	
+	<module name="multiModeDrt">
+		<parameterset type="drt">
+            <parameterset type="ExtensiveInsertionSearch"/>
+			<param name="mode" value="drt_1"/>
+			<param name="vehiclesFile" value="vehicle_100.xml"/>
+			<param name="operationalScheme" value="door2door"/>
+			<!-- optional files: -->
+			<param name="transitStopFile" value="schedule.xml"/>
+			<param name="drtServiceAreaShapeFile" value="shape.xml"/>
 
-	<module name="multiModeTaxi">
-		<parameterset type="taxi">
 
-			<param name="breakIfNotAllRequestsServed" value="false"/>
+			<param name="changeStartLinkToLastLinkInSchedule" value="false"/>
+			
+			<param name="maxTravelTimeAlpha" value="1.5"/>
+			<param name="maxTravelTimeBeta" value="1200.0"/>
+			<param name="maxWaitTime" value="1200.0"/>
+			<param name="rejectRequestIfMaxWaitOrTravelTimeViolated" value="true"/>
+			
+			<param name="stopDuration" value="60.0"/>
+			<param name="writeDetailedCustomerStats" value="true"/>
 
-			<param name="changeStartLinkToLastLinkInSchedule" value="true"/>
+			<parameterset type="zonalSystem">
+				<param name="zonesGeneration" value="GridFromNetwork"/>
+				<param name="cellSize" value="500"/>
+			</parameterset>
 
-			<!-- If false, the drop-off location remains unknown to the optimizer and
-				scheduler until the end of pickup -->
-			<param name="destinationKnown" value="false"/>
-
-			<!-- If true, detailed hourly taxi stats are dumped after each iteration. -->
-			<param name="detailedStats" value="true"/>
-
-			<!-- Typically, 60 seconds -->
-			<param name="dropoffDuration" value="60.0"/>
-
-			<!-- If true, vehicles are (GPS-like) monitored while moving. This helps
-				in getting more accurate estimates on the time of arrival. Online tracking
-				is necessary for vehicle diversion. -->
-			<param name="onlineVehicleTracker" value="false"/>
-
-			<!-- Typically, 120 seconds -->
-			<param name="pickupDuration" value="120.0"/>
-
-			<!-- An XML file specifying the taxi fleet. The file format according to
-				dvrp_vehicles_v1.dtd -->
-			<!-- To create your own vehicles, see org.matsim.contrib.av.vehicles.CreateTaxiVehicles  -->
-			<param name="taxisFile" value="vehicle_100.xml"/>
-			<!--  param name="taxisFile" value="taxis_2000.xml" /  -->
-
-			<!-- If true, time profiles of vehicle statuses (i.e. current task type)
-				and the number of unplanned requests -->
-			<param name="timeProfiles" value="true"/>
-
-			<!-- If true, vehicles can be diverted during empty trips. Requires online
-				tracking. -->
-			<param name="vehicleDiversion" value="false"/>
-
-			<parameterset type="RuleBasedTaxiOptimizer"/>
-
-			<parameterset type="taxifare">
-				<!-- transport mode for which this fare applies. Default: taxi -->
-				<param name="basefare" value="0.5"/>
-				<!-- Daily subscription fee (fee = positive value) -->
-				<param name="dailySubscriptionFee" value="0.0"/>
-				<!-- taxi fare per meter (fee = positive value) -->
-				<param name="distanceFare_m" value="0.0002"/>
-				<!-- taxi fare per hour (fee = positive value) -->
-				<param name="timeFare_h" value="3.6"/>
-				<!-- Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
-				<param name="minFarePerTrip" value="2.0"/>
+			<parameterset type="rebalancing">
+				<parameterset type="minCostFlowRebalancingStrategy">
+					<param name="targetAlpha" value="0.5"/>
+					<param name="targetBeta" value="0.5"/>
+				</parameterset>
 			</parameterset>
 		</parameterset>
 	</module>
+
+<!--	<module name="multiModeTaxi">-->
+<!--		<parameterset type="taxi">-->
+
+<!--			<param name="breakIfNotAllRequestsServed" value="false"/>-->
+
+<!--			<param name="changeStartLinkToLastLinkInSchedule" value="true"/>-->
+
+<!--			 If false, the drop-off location remains unknown to the optimizer and-->
+<!--				scheduler until the end of pickup -->
+<!--			<param name="destinationKnown" value="false"/>-->
+
+<!--			 If true, detailed hourly taxi stats are dumped after each iteration. -->
+<!--			<param name="detailedStats" value="true"/>-->
+
+<!--			 Typically, 60 seconds -->
+<!--			<param name="dropoffDuration" value="60.0"/>-->
+
+<!--			 If true, vehicles are (GPS-like) monitored while moving. This helps-->
+<!--				in getting more accurate estimates on the time of arrival. Online tracking-->
+<!--				is necessary for vehicle diversion. -->
+<!--			<param name="onlineVehicleTracker" value="false"/>-->
+
+<!--			 Typically, 120 seconds -->
+<!--			<param name="pickupDuration" value="120.0"/>-->
+
+<!--			 An XML file specifying the taxi fleet. The file format according to-->
+<!--				dvrp_vehicles_v1.dtd -->
+<!--			 To create your own vehicles, see org.matsim.contrib.av.vehicles.CreateTaxiVehicles  -->
+<!--			<param name="taxisFile" value="vehicle_100.xml"/>-->
+<!--			  param name="taxisFile" value="taxis_2000.xml" /  -->
+
+<!--			 If true, time profiles of vehicle statuses (i.e. current task type)-->
+<!--				and the number of unplanned requests -->
+<!--			<param name="timeProfiles" value="true"/>-->
+
+<!--			 If true, vehicles can be diverted during empty trips. Requires online-->
+<!--				tracking. -->
+<!--			<param name="vehicleDiversion" value="false"/>-->
+
+<!--			<parameterset type="RuleBasedTaxiOptimizer"/>-->
+
+<!--			<parameterset type="taxifare">-->
+<!--				 transport mode for which this fare applies. Default: taxi -->
+<!--				<param name="basefare" value="0.5"/>-->
+<!--				 Daily subscription fee (fee = positive value) -->
+<!--				<param name="dailySubscriptionFee" value="0.0"/>-->
+<!--				 taxi fare per meter (fee = positive value) -->
+<!--				<param name="distanceFare_m" value="0.0002"/>-->
+<!--				 taxi fare per hour (fee = positive value) -->
+<!--				<param name="timeFare_h" value="3.6"/>-->
+<!--				 Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
+<!--				<param name="minFarePerTrip" value="2.0"/>-->
+<!--			</parameterset>-->
+<!--		</parameterset>-->
+<!--	</module>-->
 
 	
 	<module name="network">
