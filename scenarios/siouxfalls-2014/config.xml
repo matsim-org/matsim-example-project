@@ -1,38 +1,35 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" ?>
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
-
 <config>
-	
-	<module name="dvrp">
-		<!-- Mode of which the network will be used for routing vehicles, calculating trave times etc. (fleet operator's perspective).
-					If null, no mode filtering is done; the standard network (Scenario.getNetwork()) is used - usually, car -->
-		<param name="networkModes" value="car"/>
-	</module>
-	
+
 	<module name="multiModeDrt">
 		<parameterset type="drt">
-            <parameterset type="ExtensiveInsertionSearch"/>
-			<param name="mode" value="drt_1"/>
-			<param name="vehiclesFile" value="vehicle_100.xml"/>
-			<param name="operationalScheme" value="door2door"/>
-			<!-- optional files: -->
-			<param name="transitStopFile" value="schedule.xml"/>
-			<param name="drtServiceAreaShapeFile" value="shape.xml"/>
+			<parameterset type="ExtensiveInsertionSearch"/>
 
-
+			<!-- If true, the startLink is changed to last link in the current schedule, so the taxi starts the next day at the link where it stopped operating the day before. False by default. -->
 			<param name="changeStartLinkToLastLinkInSchedule" value="false"/>
-			
+			<!-- Defines the slope of the maxTravelTime estimation function (optimisation constraint), i.e. maxTravelTimeAlpha * estimated_drt_travel_time + maxTravelTimeBeta. Alpha should not be smaller than 1. -->
 			<param name="maxTravelTimeAlpha" value="1.5"/>
+			<!-- Defines the shift of the maxTravelTime estimation function (optimisation constraint), i.e. maxTravelTimeAlpha * estimated_drt_travel_time + maxTravelTimeBeta. Beta should not be smaller than 0. -->
 			<param name="maxTravelTimeBeta" value="1200.0"/>
+			<!-- Max wait time for the bus to come (optimisation constraint). -->
 			<param name="maxWaitTime" value="1200.0"/>
-			<param name="rejectRequestIfMaxWaitOrTravelTimeViolated" value="true"/>
-			
+
+			<!-- Operational Scheme, either door2door or stopbased. door2door by default -->
+			<param name="operationalScheme" value="door2door"/>
+
+			<!-- Bus stop duration. -->
 			<param name="stopDuration" value="60.0"/>
+
+			<!-- An XML file specifying the vehicle fleet. The file format according to dvrp_vehicles_v1.dtd -->
+			<param name="vehiclesFile" value="vehicle_100.xml"/>
+
+			<!-- Writes out detailed DRT customer stats in each iteration. True by default. -->
 			<param name="writeDetailedCustomerStats" value="true"/>
 
 			<parameterset type="zonalSystem">
 				<param name="zonesGeneration" value="GridFromNetwork"/>
-				<param name="cellSize" value="500"/>
+				<param name="cellSize" value="2000"/>
 			</parameterset>
 
 			<parameterset type="rebalancing">
@@ -41,203 +38,103 @@
 					<param name="targetBeta" value="0.5"/>
 				</parameterset>
 			</parameterset>
+
+			<parameterset type="drtfare">
+				<param name="basefare" value="0.5"/>
+				<!-- Daily subscription fee (fee = positive value) -->
+				<param name="dailySubscriptionFee" value="0.0"/>
+				<!-- drt fare per meter (fee = positive value) -->
+				<param name="distanceFare_m" value="0.0002"/>
+				<!-- drt fare per hour (fee = positive value) -->
+				<param name="timeFare_h" value="3.6"/>
+				<!-- Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
+				<param name="minFarePerTrip" value="2.0"/>
+			</parameterset>
 		</parameterset>
 	</module>
 
-<!--	<module name="multiModeTaxi">-->
-<!--		<parameterset type="taxi">-->
+    <module name="dvrp" >
+		<!-- Mode of which the network will be used for routing vehicles, calculating travel times, etc. (fleet operator's perspective). If null, no mode filtering is done; the standard network (Scenario.getNetwork()) is used -->
+		<param name="networkModes" value="car"/>
 
-<!--			<param name="breakIfNotAllRequestsServed" value="false"/>-->
+		<!-- Used for estimation of travel times for VrpOptimizer by means of the exponential moving average. The weighting decrease, alpha, must be in (0,1]. We suggest small values of alpha, e.g. 0.05. The averaging starts from the initial travel time estimates. If not provided, the free-speed TTs is used as the initial estimates For more info see comments in: VrpTravelTimeEstimator, VrpTravelTimeModules, DvrpModule. -->
+		<param name="travelTimeEstimationAlpha" value="0.05" />
+	</module>
 
-<!--			<param name="changeStartLinkToLastLinkInSchedule" value="true"/>-->
-
-<!--			 If false, the drop-off location remains unknown to the optimizer and-->
-<!--				scheduler until the end of pickup -->
-<!--			<param name="destinationKnown" value="false"/>-->
-
-<!--			 If true, detailed hourly taxi stats are dumped after each iteration. -->
-<!--			<param name="detailedStats" value="true"/>-->
-
-<!--			 Typically, 60 seconds -->
-<!--			<param name="dropoffDuration" value="60.0"/>-->
-
-<!--			 If true, vehicles are (GPS-like) monitored while moving. This helps-->
-<!--				in getting more accurate estimates on the time of arrival. Online tracking-->
-<!--				is necessary for vehicle diversion. -->
-<!--			<param name="onlineVehicleTracker" value="false"/>-->
-
-<!--			 Typically, 120 seconds -->
-<!--			<param name="pickupDuration" value="120.0"/>-->
-
-<!--			 An XML file specifying the taxi fleet. The file format according to-->
-<!--				dvrp_vehicles_v1.dtd -->
-<!--			 To create your own vehicles, see org.matsim.contrib.av.vehicles.CreateTaxiVehicles  -->
-<!--			<param name="taxisFile" value="vehicle_100.xml"/>-->
-<!--			  param name="taxisFile" value="taxis_2000.xml" /  -->
-
-<!--			 If true, time profiles of vehicle statuses (i.e. current task type)-->
-<!--				and the number of unplanned requests -->
-<!--			<param name="timeProfiles" value="true"/>-->
-
-<!--			 If true, vehicles can be diverted during empty trips. Requires online-->
-<!--				tracking. -->
-<!--			<param name="vehicleDiversion" value="false"/>-->
-
-<!--			<parameterset type="RuleBasedTaxiOptimizer"/>-->
-
-<!--			<parameterset type="taxifare">-->
-<!--				 transport mode for which this fare applies. Default: taxi -->
-<!--				<param name="basefare" value="0.5"/>-->
-<!--				 Daily subscription fee (fee = positive value) -->
-<!--				<param name="dailySubscriptionFee" value="0.0"/>-->
-<!--				 taxi fare per meter (fee = positive value) -->
-<!--				<param name="distanceFare_m" value="0.0002"/>-->
-<!--				 taxi fare per hour (fee = positive value) -->
-<!--				<param name="timeFare_h" value="3.6"/>-->
-<!--				 Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
-<!--				<param name="minFarePerTrip" value="2.0"/>-->
-<!--			</parameterset>-->
-<!--		</parameterset>-->
-<!--	</module>-->
-
-	
 	<module name="network">
 		<param name="inputNetworkFile" value="Siouxfalls_network_PT.xml" />
+		<!-- param name="timeVariantNetwork" value="false" / if timeVariantNetwork -->
+		<!-- param name="inputChangeEventsFile" value=""/ if timeVariantNetwork -->
 	</module>
 
 	<module name="plans">
-		<param name="inputPlansFile" value="Siouxfalls_population.xml.gz" />
+		<param name="inputPlansFile" value="Siouxfalls_population.xml" />
 	</module>
-	
-	<module name="controler">
-		<param name="writeEventsInterval" value="5" />
-		<param name="writePlansInterval" value="10" />
-		<param name="eventsFileFormat" value="xml" />
-		<param name="outputDirectory" value="output/siouxfalls-2014"/>
-		<param name="firstIteration" value="0" />
-		<param name="lastIteration" value="10" />
-		<param name="mobsim" value="qsim" />
-	</module>
- 	
- 	<module name="qsim" >
+
+	<module name="qsim">
+		<param name="simStarttimeInterpretation" value="onlyUseStarttime" />
 		<param name="startTime" value="00:00:00" />
-		<param name="endTime" value="30:00:00" />
-		<param name="flowCapacityFactor" value="1.00" />
-		<param name="storageCapacityFactor" value="1.00" />
-		<param name="numberOfThreads" value="1" />
-		<param name = "snapshotperiod"	value = "00:00:01"/>
+		<param name="endTime" value="24:00:00" />
+		<param name="insertingWaitingVehiclesBeforeDrivingVehicles"
+			value="true" />
+		<param name="snapshotStyle" value="queue" />
+	</module>
 
-		<!-- Boolean. `true': stuck vehicles are removed, aborting the plan; `false': stuck vehicles are forced into the next link. `false' is probably the better choice. -->
-		<param name="removeStuckVehicles" value="false" />
+	<module name="otfvis">
+		<param name="coloringScheme" value="taxicab" />
+		<param name="drawNonMovingItems" value="true" />
+	</module>
 
-		<!-- time in seconds.  Time after which the frontmost vehicle on a link is called `stuck' if it does not move. -->
-		<param name="stuckTime" value="3600.0" />
-		<param name="timeStepSize" value="00:00:01" />
-
-		<!-- `queue' for the standard queue model, `withHolesExperimental' (experimental!!) for the queue model with holes -->
-		<param name="trafficDynamics" value="queue" />
-		
+	<module name="controler">
+		<param name="outputDirectory" value="output/siouxfall" />
+		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
+		<param name="firstIteration" value="0" />
+		<param name="lastIteration" value="0" />
 	</module>
 
 	<module name="planCalcScore">
-
-
-		<param name="BrainExpBeta" value="1.0" />
-		<!-- new_score = (1-learningRate)*old_score + learningRate * score_from_mobsim.  learning rates close to zero emulate score averaging, but slow down initial convergence -->
-		<param name="learningRate" value="1.0" />
-
-		<parameterset type="scoringParameters">
-		<param name="earlyDeparture" value="0.0" />
-		<param name="lateArrival" value="0.0" />
-		<param name="marginalUtilityOfMoney" value="0.062" />
-		<param name="performing" value="0.96" />
-		<param name="utilityOfLineSwitch" value="0.0"/>
-		<param name="waitingPt" value="-0.18" />
-
-		<parameterset type="modeParams">
-			<param name="mode" value="car"/>
-			<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
-			<param name="constant" value="-0.562"/>
-			<param name="monetaryDistanceRate" value="-0.0004"/>
-		</parameterset>
-		<parameterset type="modeParams">
-			<param name="mode" value="bike"/>
-			<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
-			<param name="constant" value="-0.362"/>
-			<param name="monetaryDistanceRate" value="-0.0002"/>
-		</parameterset>
-		<parameterset type="modeParams">
-			<param name="mode" value="pt"/>
-			<param name="marginalUtilityOfTraveling_util_hr" value="-0.18" />
-			<param name="monetaryDistanceRate" value="0.0"/>
-			<param name="constant" value="-0.124"/>
-		</parameterset>
-		<parameterset type="modeParams">
-			<param name="mode" value="walk"/>
-			<param name="marginalUtilityOfTraveling_util_hr" value="-1.14" />
-			<param name="constant" value="0.0"/>
-			<param name="marginalUtilityOfDistance_util_m" value="0.0"/>
-		</parameterset>
-
 		<parameterset type="activityParams">
-			<param name="activityType"    value="home" /> <!-- home -->
-			<param name="priority"        value="1" />
-			<param name="typicalDuration" value="13:00:00" />
-			<param name="minimalDuration" value="01:00:00" />
-		</parameterset>
-		<parameterset type="activityParams">
-			<param name="activityType"            value="work" />
-			<param name="priority"        value="1" />
-			<param name="typicalDuration" value="09:00:00" />
-			<param name="minimalDuration" value="08:00:00" />
-			<param name="openingTime"     value="08:00:00" />
-			<param name="earliestEndTime" value="17:00:00" />
+			<param name="activityType" value="work" />
+			<param name="typicalDuration" value="08:00:00" />
+			<param name="openingTime" value="06:00:00" />
 			<param name="latestStartTime" value="09:00:00" />
-			<param name="closingTime"     value="18:00:00" />
+			<param name="closingTime" value="17:00:00" />
 		</parameterset>
 
 		<parameterset type="activityParams">
-			<param name="activityType"            value="secondary" />
+			<param name="activityType" value="home" />
+			<param name="typicalDuration" value="12:00:00" />
+		</parameterset>
+
+	    <parameterset type="activityParams">
+			<param name="activityType"    value="secondary" />
 			<param name="priority"        value="1" />
 			<param name="typicalDuration" value="01:00:00" />
 			<param name="minimalDuration" value="00:30:00" />
 			<param name="openingTime"     value="08:00:00" />
 			<param name="closingTime"     value="20:00:00" />
 		</parameterset>
+
+		<parameterset type="modeParams">
+			<param name="constant" value="0.0" />
+			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+			<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+			<param name="mode" value="drt" />
+			<param name="monetaryDistanceRate" value="0.0" />
 		</parameterset>
+
 	</module>
-	
+
 	<module name="strategy">
-		<param name="maxAgentPlanMemorySize" value="5" /> <!-- 0 means unlimited -->
+		<param name="fractionOfIterationsToDisableInnovation" value="0.8" />
 
 		<parameterset type="strategysettings">
-			<param name="strategyName" value="ChangeExpBeta"/>
-			<param name="weight" value="0.7"/>
-		</parameterset>
-
-		<parameterset type="strategysettings">
-			<param name="strategyName" value="ReRoute"/>
-			<param name="disableAfterIteration" value="2900" />
-			<param name="weight" value="0.01"/>
-		</parameterset>
-
-		<parameterset type="strategysettings">
-			<param name="strategyName" value="SubtourModeChoice"/>
-			<param name="disableAfterIteration" value="2900" />
-			<param name="weight" value="0.01"/>
-		</parameterset>
-
-		<parameterset type="strategysettings">
-			<param name="strategyName" value="TimeAllocationMutator"/>
-			<param name="disableAfterIteration" value="2900" />
-			<param name="weight" value="0.01"/>
+			<param name="strategyName" value="TimeAllocationMutator" />
+			<param name="weight" value="0.1" />
 		</parameterset>
 	</module>
-	
-<!-- ====================================================================== -->
+	<module name="TimeAllocationMutator">
+		<param name="mutationRange" value="900.0" />
 
-	<module name="TimeAllocationMutator" >
-		<param name="mutationRange" value="3600.00" />
 	</module>
-	
 </config>

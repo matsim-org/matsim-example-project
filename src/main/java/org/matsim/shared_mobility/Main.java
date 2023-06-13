@@ -33,47 +33,21 @@ public class Main {
 		String vehicles = "scenarios/siouxfalls-2014/vehicles_100.xml";
 		String drt = "scenarios/drt/config.xml";
 		
-		Config config = ConfigUtils.loadConfig(drt,  new DvrpConfigGroup(), new MultiModeDrtConfigGroup(), new OTFVisConfigGroup());
+		Config config = ConfigUtils.loadConfig(filename,  new DvrpConfigGroup(), new MultiModeDrtConfigGroup(), new OTFVisConfigGroup());
 		config.qsim().setSimStarttimeInterpretation(StarttimeInterpretation.onlyUseStarttime);
 		config.controler().setLastIteration(0);
 		config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 		
+		Scenario scenario = ScenarioUtils.loadScenario(config);
 		
-		  Scenario scenario = ScenarioUtils.loadScenario(config);
-		  
-			/*
-			 * var drtConfig = MultiModeDrtConfigGroup.get(config).getModalElements();
-			 * for(DrtConfigGroup drtConfig1 : drtConfig) {
-			 * 
-			 * var veh = drtConfig1.createParameterSet(vehicles);
-			 * 
-			 * }
-			 */
-		  
-		  
-			/*
-			 * VehicleType avType =
-			 * VehicleUtils.createVehicleType(Id.create("autonomousVehicleType",VehicleType.
-			 * class ) ); avType.setFlowEfficiencyFactor(2.0);
-			 * scenario.getVehicles().addVehicleType(avType);
-			 * 
-			 * for (int i = 0; i < scenario.getPopulation().getPersons().size(); i++) {
-			 * //agents on lower route get AVs as vehicles, agents on upper route keep a
-			 * standard vehicle (= default, if nothing is set) Id<Vehicle> vid =
-			 * Id.createVehicleId("AV_" + i); Vehicle v =
-			 * scenario.getVehicles().getFactory().createVehicle(vid, avType);
-			 * scenario.getVehicles().addVehicle(v); }
-			 */
-		  boolean otfvis = false;
-		  Controler controler = DrtControlerCreator.createControler(config, otfvis);
-			/*
-			 * Controler controler = new Controler(scenario);
-			 * controler.addOverridingModule(new DvrpModule());
-			 * controler.addOverridingModule(new MultiModeTaxiModule());
-			 * controler.configureQSimComponents(DvrpQSimComponents.activateAllModes(
-			 * MultiModeTaxiConfigGroup.get(config)));
-			 */
-		  controler.run();
+		// Randomly decrease populations from to check waiting time, keeping drt vehciles constant (10 min avg waiting time).
+		int popSize = scenario.getPopulation().getPersons().size();
+		
+		
+		
+	    Controler controler = DrtControlerCreator.createControler(config, false);
+	
+		controler.run();
 		 
 
 	}

@@ -1,0 +1,73 @@
+2023-06-13T12:43:38,598  WARN DrtConfigGroup:248 qsim.endTime should be specified and qsim.simEndtimeInterpretation should be 'onlyUseEndtime' if postponed request rejection is allowed. Otherwise, rejected passengers (who are stuck endlessly waiting for a DRT vehicle) will prevent QSim from stopping. Keep also in mind that not setting an end time may result in agents attempting to travel without vehicles being available.
+2023-06-13T12:43:38,598  WARN DrtConfigGroup:268 Consider increasing global.numberOfThreads to at least the value of drt.numberOfThreads in order to speed up the DRT route update during the replanning phase.
+2023-06-13T12:43:38,615  WARN PrepareForSimImpl:229 'usePersonIdForMissingVehicleId' is deprecated. It will be removed soon.
+2023-06-13T12:43:39,373  WARN PreProcessEuclidean:60 There are links with stored length smaller than their Euclidean distance in this network. Thus, A* cannot guarantee to calculate the least-cost paths between two nodes.
+2023-06-13T12:43:39,407  WARN RandomizingTimeDistanceTravelDisutilityFactory:113 There will be no routing randomness. The randomization of the travel disutility requires the monetary distance rate to be different than zero. Continuing anyway.
+2023-06-13T12:43:39,408  WARN RandomizingTimeDistanceTravelDisutilityFactory:118 There will be no routing randomness. The randomization of the travel disutility requires the travel time cost rate to be different than zero. Continuing anyway.
+2023-06-13T12:43:39,413  WARN PreProcessEuclidean:60 There are links with stored length smaller than their Euclidean distance in this network. Thus, A* cannot guarantee to calculate the least-cost paths between two nodes.
+2023-06-13T12:43:39,475 ERROR ParallelPersonAlgorithmUtils$ExceptionHandler:165 Thread PersonPrepareForSim.0 died with exception while handling events.
+org.matsim.core.router.TripRouter$UnknownModeException: unregistered main mode |drt|: does not pertain to [pt, car, non_network_walk, ride, drt_1, walk, bike]
+	at org.matsim.core.router.TripRouter.calcRoute(TripRouter.java:194) ~[matsim-15.0.jar:?]
+	at org.matsim.core.router.PlanRouter.run(PlanRouter.java:102) ~[matsim-15.0.jar:?]
+	at org.matsim.core.population.algorithms.PersonPrepareForSim.run(PersonPrepareForSim.java:234) ~[matsim-15.0.jar:?]
+	at org.matsim.core.population.algorithms.ParallelPersonAlgorithmUtils$PersonAlgoThread.run(ParallelPersonAlgorithmUtils.java:146) ~[matsim-15.0.jar:?]
+	at java.lang.Thread.run(Thread.java:1623) [?:?]
+2023-06-13T12:43:39,475 ERROR ParallelPersonAlgorithmUtils$ExceptionHandler:165 Thread PersonPrepareForSim.1 died with exception while handling events.
+org.matsim.core.router.TripRouter$UnknownModeException: unregistered main mode |drt|: does not pertain to [pt, car, non_network_walk, ride, drt_1, walk, bike]
+	at org.matsim.core.router.TripRouter.calcRoute(TripRouter.java:194) ~[matsim-15.0.jar:?]
+	at org.matsim.core.router.PlanRouter.run(PlanRouter.java:102) ~[matsim-15.0.jar:?]
+	at org.matsim.core.population.algorithms.PersonPrepareForSim.run(PersonPrepareForSim.java:234) ~[matsim-15.0.jar:?]
+	at org.matsim.core.population.algorithms.ParallelPersonAlgorithmUtils$PersonAlgoThread.run(ParallelPersonAlgorithmUtils.java:146) ~[matsim-15.0.jar:?]
+	at java.lang.Thread.run(Thread.java:1623) [?:?]
+2023-06-13T12:43:39,529 ERROR MatsimRuntimeModifications:76 Getting uncaught Exception in Thread main
+java.lang.RuntimeException: Exception while processing persons. Cannot guarantee that all persons have been fully processed.
+	at org.matsim.core.population.algorithms.ParallelPersonAlgorithmUtils.run(ParallelPersonAlgorithmUtils.java:121) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.PrepareForSimImpl.run(PrepareForSimImpl.java:179) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.NewControler.prepareForSim(NewControler.java:114) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.AbstractController$1.run(AbstractController.java:81) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.MatsimRuntimeModifications.run(MatsimRuntimeModifications.java:70) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.MatsimRuntimeModifications.run(MatsimRuntimeModifications.java:53) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.AbstractController.run(AbstractController.java:90) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.NewControler.run(NewControler.java:83) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.Controler.run(Controler.java:250) [matsim-15.0.jar:?]
+	at org.matsim.shared_mobility.Main.main(Main.java:76) [classes/:?]
+2023-06-13T12:43:39,530 ERROR MatsimRuntimeModifications:82 ERROR --- This is an unexpected shutdown!
+2023-06-13T12:43:39,531 ERROR MatsimRuntimeModifications:85 Shutdown possibly caused by the following Exception:
+java.lang.RuntimeException: Exception while processing persons. Cannot guarantee that all persons have been fully processed.
+	at org.matsim.core.population.algorithms.ParallelPersonAlgorithmUtils.run(ParallelPersonAlgorithmUtils.java:121) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.PrepareForSimImpl.run(PrepareForSimImpl.java:179) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.NewControler.prepareForSim(NewControler.java:114) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.AbstractController$1.run(AbstractController.java:81) ~[matsim-15.0.jar:?]
+	at org.matsim.core.controler.MatsimRuntimeModifications.run(MatsimRuntimeModifications.java:70) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.MatsimRuntimeModifications.run(MatsimRuntimeModifications.java:53) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.AbstractController.run(AbstractController.java:90) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.NewControler.run(NewControler.java:83) [matsim-15.0.jar:?]
+	at org.matsim.core.controler.Controler.run(Controler.java:250) [matsim-15.0.jar:?]
+	at org.matsim.shared_mobility.Main.main(Main.java:76) [classes/:?]
+2023-06-13T12:43:40,361 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_waitTimeComparison_drt_1.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,362 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_waitTimeComparison_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,362 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_rejections_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,362 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_legs_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,363 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_vehicleDistanceStats_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,363 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_detours_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,364 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_detours_drt_1_distancePlot.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,364 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_detours_drt_1_travelTimePlot.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,364 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_detours_drt_1_rideTimePlot.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,365 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_waitStats_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,365 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_waitStats_drt_1.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,366 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_waitStats_drt_1_requests.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,367 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_constraints_drt_1_waiting_time.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,367 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_constraints_drt_1_travel_time.png did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,368 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_boardings_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,368 ERROR DrtAnalysisControlerListener:421 writing output Siouxfall_test/output_drt_alightments_drt_1.csv did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,370 ERROR VehicleTaskProfileWriter:157 writing output Siouxfall_test/output_task_time_profiles_drt_1.txtdid not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,401 ERROR VehicleTaskProfileWriter:157 writing output Siouxfall_test/output_task_time_profiles_Line_drt_1.pngdid not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,401 ERROR VehicleTaskProfileWriter:157 writing output Siouxfall_test/output_task_time_profiles_StackedArea_drt_1.pngdid not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,402 ERROR VehicleOccupancyProfileWriter:183 writing output Siouxfall_test/output_occupancy_time_profiles.txt_drt_1did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,403 ERROR VehicleOccupancyProfileWriter:183 writing output Siouxfall_test/output_occupancy_time_profiles_Line.png_drt_1did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:40,403 ERROR VehicleOccupancyProfileWriter:183 writing output Siouxfall_test/output_occupancy_time_profiles_StackedArea.png_drt_1did not work; probably parameters were such that no such output was generated in the final iteration
+2023-06-13T12:43:41,355  WARN MGC:179 Assuming that coordinates are in longitude first notation, i.e. (longitude, latitude).
+2023-06-13T12:43:42,495  WARN DrtZonalWaitTimesAnalyzer:169 Coordinate reference system "Atlantis" is unknown. Please set a crs in config global. Will try to create drt_waitStats_drt_1_zonal.shp anyway.
+2023-06-13T12:43:43,629 ERROR MatsimRuntimeModifications:100 ERROR --- MATSim unexpectedly terminated. Please check the output or the logfile with warnings and errors for hints.
+2023-06-13T12:43:43,630 ERROR MatsimRuntimeModifications:101 ERROR --- results should not be used for further analysis.
+2023-06-13T12:43:43,630 ERROR MatsimRuntimeModifications:105 ERROR --- This was an unexpected shutdown! See the log file for a possible reason.
