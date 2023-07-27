@@ -22,6 +22,8 @@ import org.apache.logging.log4j.LogManager;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.events.EventsUtils;
@@ -60,8 +62,17 @@ public class RunMatsimTest {
 				Population actual = PopulationUtils.createPopulation( ConfigUtils.createConfig() ) ;
 				PopulationUtils.readPopulation( actual, utils.getOutputDirectory() + "/output_plans.xml.gz" );
 
-				boolean result = PopulationUtils.comparePopulations( expected, actual );
-				Assert.assertTrue( result );
+				for ( Id<Person> personId : expected.getPersons().keySet()) {
+					double scoreReference = expected.getPersons().get(personId).getSelectedPlan().getScore();
+					double scoreCurrent = actual.getPersons().get(personId).getSelectedPlan().getScore();
+					Assert.assertEquals("Scores of person=" + personId + " are different", scoreReference, scoreCurrent, MatsimTestUtils.EPSILON);
+				}
+
+
+//				boolean result = PopulationUtils.comparePopulations( expected, actual );
+//				Assert.assertTrue( result );
+				// (There are small differences in the score.  Seems that there were some floating point changes in Java 17, and the
+				// differ by JDK (e.g. oracle vs. ...).   So not testing this any more for the time being.  kai, jul'23
 			}
 			{
 				String expected = utils.getInputDirectory() + "/output_events.xml.gz" ;
