@@ -118,9 +118,8 @@ public class RunMatsim{
 		// possibly modify controler here
 
 //		controler.addOverridingModule( new OTFVisLiveModule() ) ;
-
-		// ======================
-
+//		controler.addOverridingModule( new SimWrapperModule() );
+		
 		controler.run();
 	}
 	
