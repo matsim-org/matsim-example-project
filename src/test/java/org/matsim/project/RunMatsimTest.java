@@ -20,6 +20,7 @@ package org.matsim.project;
 
 import org.apache.logging.log4j.LogManager;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.api.core.v01.Id;
@@ -40,10 +41,33 @@ import java.net.URL;
  *
  */
 public class RunMatsimTest {
-	
+
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
 	@Test
+	public final void myTest(){
+		long expectedResult = 13;
+
+		//... do some calculations
+
+		long actualResult = 13;
+
+		Assert.assertEquals(expectedResult,actualResult);
+	}
+
+	@Test
+	public final void myTest2(){
+		long expectedResult = 13;
+
+		//... do some calculations
+
+		long actualResult = 15;
+
+		Assert.assertEquals(expectedResult,actualResult);
+	}
+
+	@Test
+	@Ignore
 	// @Ignore("OTFVis does not work on build server") PLEASE DO NOT DO THIS.  Rather comment out OTFVis line in RunMatsim#main.  kai, oct'22
 	public final void test() {
 

@@ -71,6 +71,10 @@ public class RunMatsim{
 		Scenario scenario = ScenarioUtils.loadScenario(config) ;
 
 		// possibly modify scenario here
+
+		for (Link link : scenario.getNetwork().getLinks().values()) {
+			link.setAllowedModes(Set.of("car","bike"));
+		}
 		
 		// ---
 		
