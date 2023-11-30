@@ -54,6 +54,13 @@
 		</dependency>
 
 		<dependency>
+			<!-- This is the matsim "freight": -->
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>freight</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
+
+		<dependency>
 			<!-- Include the JUnit testing library.  Not transitive. -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

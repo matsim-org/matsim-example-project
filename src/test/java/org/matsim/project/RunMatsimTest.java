@@ -72,6 +72,8 @@ public class RunMatsimTest {
 	public final void test() {
 
 		try {
+
+
 			final URL baseUrl = ExamplesUtils.getTestScenarioURL( "equil" );
 			final String fullUrl = IOUtils.extendUrl( baseUrl, "config.xml" ).toString();
 			String [] args = {fullUrl,
