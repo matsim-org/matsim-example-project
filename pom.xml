@@ -179,7 +179,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<outputFile>${project.basedir}/target/${project.build.finalName}.jar</outputFile>
+							<outputFile>${project.basedir}/${project.build.finalName}.jar</outputFile>
 							<transformers>
 								<!-- The following sets the main class for the executable jar as you otherwise would with the assembly plugin -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -222,6 +222,9 @@
                     <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <configuration>
+			<outputDirectory>${session.executionRootDirectory}/target</outputDirectory>
+			<finalName>matsim-bundle</finalName>
+			<appendAssemblyId>false</appendAssemblyId>
                         <descriptorRefs>
                             <descriptorRef>jar-with-dependencies</descriptorRef>
                         </descriptorRefs>
