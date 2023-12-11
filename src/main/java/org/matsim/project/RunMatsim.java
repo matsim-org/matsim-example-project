@@ -42,6 +42,9 @@ import org.matsim.core.utils.collections.CollectionUtils;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.VehicleUtils;
 import org.matsim.vis.otfvis.OTFVisConfigGroup;
+import ch.sbb.matsim.mobsim.qsim.SBBTransitModule;
+import ch.sbb.matsim.mobsim.qsim.pt.SBBTransitEngineQSimModule;
+import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,11 +79,19 @@ public class RunMatsim{
 		
 		Controler controler = new Controler( scenario ) ;
 		
-		// possibly modify controler here
+	// possibly modify controler here
 
 //		controler.addOverridingModule( new OTFVisLiveModule() ) ;
+		// To use the deterministic pt simulation (Part 1 of 2):
+		controler.addOverridingModule(new SBBTransitModule());
 
-//		controler.addOverridingModule( new SimWrapperModule() );
+		// To use the fast pt router (Part 1 of 1)
+		controler.addOverridingModule(new SwissRailRaptorModule());
+
+		// To use the deterministic pt simulation (Part 2 of 2):
+		controler.configureQSimComponents(components -> {
+					new SBBTransitEngineQSimModule().configure(components);
+				});
 		
 		// ---
 		
