@@ -13,6 +13,7 @@ RUN mvn -f pom.xml -DskipTests -P dockerready clean package \
     && echo "Image build date: $(date --iso-8601=seconds)" >> BANNER.txt
     
 FROM openjdk:18-slim
+ARG APP_DIR=/opt/matsim
 ARG APP_DIR
 WORKDIR ${APP_DIR}
 USER root
