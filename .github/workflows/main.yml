@@ -5,7 +5,7 @@ name: Generative Art Docker Publish
 
 on:
   push:
-    branches: [master]
+    branches: [sbb]
 jobs:
         
   build_docker_and_push_to_registry:
@@ -32,6 +32,6 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ghcr.io/schumifabi/mcube-matsim-project/docker-image-matsim:latest
+          tags: ghcr.io/schumifabi/mcube-matsim-project/docker-image-sbb:latest
           labels: git-comit=https://github.com/${{ github.repository }}/commit/${{ github.sha }}
           build-args: "COMMIT=https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
