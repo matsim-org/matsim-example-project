@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     figlet \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR ${APP_DIR}
-RUN mvn -f pom.xml -DskipTests clean package \
+RUN mvn -f pom.xml -DskipTests -P dockerready clean package \
     && echo "$(mvn -q help:evaluate -Dexpression=project.version -DforceStdout=true)" > VERSION.txt \
     && figlet -f slant "MATSim $(cat VERSION.txt)" > BANNER.txt \
     && echo "Image build date: $(date --iso-8601=seconds)" >> BANNER.txt
