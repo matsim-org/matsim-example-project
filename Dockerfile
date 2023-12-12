@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     figlet \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR ${APP_DIR}
-RUN mvn -f pom.xml -DskipTests -P dockerready clean package \
+RUN mvn -f pom.xml -DskipTests clean package \
     && echo "$(mvn -q help:evaluate -Dexpression=project.version -DforceStdout=true)" > VERSION.txt \
     && figlet -f slant "MATSim $(cat VERSION.txt)" > BANNER.txt \
     && echo "Image build date: $(date --iso-8601=seconds)" >> BANNER.txt
@@ -17,10 +17,10 @@ ARG APP_DIR=/opt/matsim
 ARG APP_DIR
 WORKDIR ${APP_DIR}
 USER root
-COPY --chmod=0755 docker-entrypoint.sh ./
+COPY --chmod=0755 docker-entrypoint.sh /opt/matsim/
 COPY --from=build ${APP_DIR}/*.txt ./resources/
-COPY --from=build ${APP_DIR}/target/matsim-bundle.jar ./matsim.jar
-RUN chmod +x ./matsim.jar
+COPY --from=build ${APP_DIR}/target/matsim-bundle.jar /opt/matsim/matsim.jar
+RUN chmod +x /opt/matsim/matsim.jar
 ENV MATSIM_HOME=${APP_DIR} \
     MATSIM_INPUT=${APP_DIR}/data/input \
     MATSIM_OUTPUT=${APP_DIR}/data/output

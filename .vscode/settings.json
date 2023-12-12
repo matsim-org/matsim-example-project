@@ -1,0 +1,14 @@
+{
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.configuration.runtimes": [
+        {
+        "name": "JavaSE-11",
+        "path": "C:\\Program Files\\Microsoft\\jdk-17.0.2.8-hotspot",
+        "default": true
+        }
+    
+    ],
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Microsoft\\jdk-17.0.2.8-hotspot",
+    "java.configuration.updateBuildConfiguration": "interactive",
+}
