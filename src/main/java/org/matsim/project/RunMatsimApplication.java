@@ -43,7 +43,7 @@ public class RunMatsimApplication extends MATSimApplication {
 	@Override
 	protected Config prepareConfig(Config config) {
 
-		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
+		config.controller().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 
 		// possibly modify config here
 

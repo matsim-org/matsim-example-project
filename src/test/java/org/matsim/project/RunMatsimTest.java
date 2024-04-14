@@ -19,9 +19,8 @@
 package org.matsim.project;
 
 import org.apache.logging.log4j.LogManager;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
@@ -31,17 +30,21 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.examples.ExamplesUtils;
 import org.matsim.testcases.MatsimTestUtils;
-import org.matsim.utils.eventsfilecomparison.EventsFileComparator;
+import org.matsim.utils.eventsfilecomparison.ComparisonResult;
 
 import java.net.URL;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author nagel
  *
  */
 public class RunMatsimTest {
-	
-	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
+
+	@RegisterExtension
+	public MatsimTestUtils utils = new MatsimTestUtils() ;
 
 	@Test
 	// @Ignore("OTFVis does not work on build server") PLEASE DO NOT DO THIS.  Rather comment out OTFVis line in RunMatsim#main.  kai, oct'22
@@ -65,7 +68,7 @@ public class RunMatsimTest {
 				for ( Id<Person> personId : expected.getPersons().keySet()) {
 					double scoreReference = expected.getPersons().get(personId).getSelectedPlan().getScore();
 					double scoreCurrent = actual.getPersons().get(personId).getSelectedPlan().getScore();
-					Assert.assertEquals("Scores of person=" + personId + " are different", scoreReference, scoreCurrent, MatsimTestUtils.EPSILON);
+					assertEquals(scoreReference, scoreCurrent, 0.001, "Scores of person=" + personId + " are different");
 				}
 
 
@@ -77,17 +80,15 @@ public class RunMatsimTest {
 			{
 				String expected = utils.getInputDirectory() + "/output_events.xml.gz" ;
 				String actual = utils.getOutputDirectory() + "/output_events.xml.gz" ;
-				EventsFileComparator.Result result = EventsUtils.compareEventsFiles( expected, actual );
-				Assert.assertEquals( EventsFileComparator.Result.FILES_ARE_EQUAL, result );
+				ComparisonResult result = EventsUtils.compareEventsFiles( expected, actual );
+				assertEquals( ComparisonResult.FILES_ARE_EQUAL, result );
 			}
 
 		} catch ( Exception ee ) {
 			LogManager.getLogger(this.getClass() ).fatal("there was an exception: \n" + ee ) ;
 
 			// if one catches an exception, then one needs to explicitly fail the test:
-			Assert.fail();
+			fail();
 		}
-
-
 	}
 }
