@@ -67,6 +67,7 @@ public class RunMatsimApplication extends MATSimApplication {
 		// possibly modify controler here
 
 //		controler.addOverridingModule( new OTFVisLiveModule() ) ;
+//		controler.addOverridingModule( new SimWrapperModule() ) ;
 
 
 		// ---
