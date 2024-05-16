@@ -150,11 +150,11 @@
 			<artifactId>vsp</artifactId>
 			<version>${matsim.version}</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.matsim.contrib</groupId>-->
-<!--			<artifactId>simwrapper</artifactId>-->
-<!--			<version>${matsim.version}</version>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>simwrapper</artifactId>
+			<version>${matsim.version}</version>
+		</dependency>
 
 		<!--Dependencies from where stated above to here are added as a service; they can be removed if you don't need them-->
 
