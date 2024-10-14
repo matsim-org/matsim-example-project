@@ -21,7 +21,8 @@ package org.matsim.project;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.controler.Controler;
+import org.matsim.core.controler.Controller;
+import org.matsim.core.controler.ControllerUtils;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -52,17 +53,17 @@ public class RunMatsim{
 		
 		// ---
 		
-		Controler controler = new Controler( scenario ) ;
+		Controller controller = ControllerUtils.createController( scenario );
 		
-		// possibly modify controler here
+		// possibly modify controller here
 
-//		controler.addOverridingModule( new OTFVisLiveModule() ) ;
+//		controller.addOverridingModule( new OTFVisLiveModule() ) ;
 
-//		controler.addOverridingModule( new SimWrapperModule() );
+//		controller.addOverridingModule( new SimWrapperModule() );
 		
 		// ---
 		
-		controler.run();
+		controller.run();
 	}
 	
 }
