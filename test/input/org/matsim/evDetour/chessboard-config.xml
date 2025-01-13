@@ -26,7 +26,7 @@
 	</module>
 
 	<module name="plans">
-		<param name="inputPlansFile" value="triple-charger-plan.xml" />
+		<param name="inputPlansFile" value="triple-charger-plan-test.xml" />
 	</module>
 	
 	<module name="planCalcScore">
@@ -82,7 +82,7 @@
 			<parameterset type="activityParams">
 				<param name="activityType"            value="leisure" />
 				<param name="priority"        value="1" />
-				<param name="typicalDuration" value="02:00:00" />
+				<param name="typicalDuration" value="00:30:00" />
 				<param name="minimalDuration" value="00:10:00" />
 				<param name="openingTime"     value="08:00:00" />
 				<param name="latestStartTime" value="21:00:00" />
@@ -90,7 +90,18 @@
 				<param name="closingTime"     value="22:00:00" />
 			</parameterset>
 		</parameterset>
+		<parameterset type="activityParams">
+			<param name="activityType" value="charging"/>
+			<param name="priority"        value="1" />
+			<param name="typicalDuration" value="02:00:00" />
+			<param name="minimalDuration" value="01:00:00" />
+			<param name="openingTime"     value="08:00:00" />
+			<param name="latestStartTime" value="21:00:00" />
+			<param name="earliestEndTime" value="" />
+			<param name="closingTime"     value="22:00:00" />
+		</parameterset>
 	</module>
+
 	<module name="strategy">
 		<param name="maxAgentPlanMemorySize" value="5" /> <!-- 0 means unlimited -->
 

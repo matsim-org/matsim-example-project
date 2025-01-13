@@ -11,71 +11,71 @@
 		<attributes>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="25" max_dur="03:00:00">
+			<activity type="home" link="165" max_dur="03:00:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="01:00:00">
+			<activity type="charging" link="13" max_dur="01:00:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="103" max_dur="00:50:00">
+			<activity type="work" link="94" max_dur="00:50:00">
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="home" link="25" max_dur="00:50:00">
+			<activity type="home" link="165" max_dur="00:50:00">
 			</activity>
 		</plan>
 

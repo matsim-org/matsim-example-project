@@ -1,4 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?><!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd" []><population desc="Plans_Test1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population desc="Plans_Test1">
 
 	<attributes>
 		<attribute name="coordinateReferenceSystem" class="java.lang.String">Atlantis</attribute>
@@ -11,71 +14,71 @@
 		<attributes>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="132" max_dur="03:00:00">
+			<activity type="home" link="2" max_dur="03:00:00" >
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="91" max_dur="01:00:00">
+			<activity type="work" link="90" max_dur="01:00:00" >
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="2" max_dur="00:50:00" >
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="90" max_dur="00:50:00" >
+			</activity>
+			<leg mode="car" >
+			</leg>
+			<activity type="work" link="2" max_dur="00:50:00" >
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="90" max_dur="00:50:00" >
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="2" max_dur="00:50:00" >
 			</activity>
 			<leg mode="car">
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="90" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="2" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="90" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="2" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="90" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="2" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="90" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="2" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
+			<activity type="work" link="90" max_dur="00:50:00" >
 			</activity>
-			<leg mode="car">
+			<leg mode="car" >
 			</leg>
-			<activity type="work" link="91" max_dur="00:50:00">
-			</activity>
-			<leg mode="car">
-			</leg>
-			<activity type="home" link="132" max_dur="00:50:00">
+			<activity type="home" link="2" max_dur="00:50:00" >
 			</activity>
 		</plan>
 

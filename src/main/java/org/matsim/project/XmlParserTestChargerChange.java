@@ -1,6 +1,6 @@
 package org.matsim.project;
 
-import scala.xml.XML;
+import com.ctc.wstx.exc.WstxOutputException;
 
 import javax.xml.stream.*;
 import javax.xml.stream.events.Attribute;
@@ -13,27 +13,31 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-public class XmlParser {
+public class XmlParserTestChargerChange {
 
     public static void main(String[] args) throws XMLStreamException, FileNotFoundException {
         String path = "C:\\Users\\ylvlo\\Documents\\Examensarbete\\Kod\\matsim-example-project2\\test\\input\\org\\matsim\\evDetour\\1pctNetwork.xml";
 
-        ArrayList<StartElement> links = XmlParser.findTagsInXMLFile(path, "link");
+        ArrayList<StartElement> links = XmlParserTestChargerChange.findTagsInXMLFile(path, "link");
         String[] linkIDs = new String[links.size()];
         for(int i = 0; i < links.size(); i++){
-            linkIDs[i] = XmlParser.getValueFromTag(links.get(i), "id");
+            linkIDs[i] = XmlParserTestChargerChange.getValueFromTag(links.get(i), "id");
             System.out.println(linkIDs[i]);
         }
 
         Random rand = new Random();
         int workIdIndex = 0;
         int homeIdIndex = 0;
-        while(workIdIndex == homeIdIndex){
+        int chargerIdIndex = 0;
+        while(workIdIndex == homeIdIndex || chargerIdIndex == homeIdIndex  || workIdIndex == chargerIdIndex){
             workIdIndex = rand.nextInt(linkIDs.length);
             homeIdIndex = rand.nextInt(linkIDs.length);
+            chargerIdIndex = rand.nextInt(linkIDs.length);
         }
         String newWorkId = linkIDs[workIdIndex];
         String newHomeId = linkIDs[homeIdIndex];
+        String newChargerId = linkIDs[chargerIdIndex];
+        String newEventType = "charging";
 
 
         String plansPath = "C:\\Users\\ylvlo\\Documents\\Examensarbete\\Kod\\matsim-example-project2\\test\\input\\org\\matsim\\evDetour\\triple-charger-plan.xml";
@@ -42,9 +46,11 @@ public class XmlParser {
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 
         XMLEventReader reader = xmlInputFactory.createXMLEventReader(new FileInputStream(plansPath));
-        XMLEventWriter writer = xmlOutputFactory.createXMLEventWriter(new FileOutputStream(plansPath));
+        XMLEventWriter writer = xmlOutputFactory.createXMLEventWriter(new FileOutputStream(outputTempPath));
 
+        int i = 0;
         while(reader.hasNext()){
+            //System.out.println("Gets here");
             XMLEvent nextEvent = reader.nextEvent();
             if(nextEvent.isStartElement()) {
                 StartElement startElement = nextEvent.asStartElement();
@@ -53,7 +59,11 @@ public class XmlParser {
                     while(attributes.hasNext()){
                         Attribute at = attributes.next();
                         if(at.getName().getLocalPart().equals("type")){
-                            if(at.getValue().equals("work")){
+                            if (at.getValue().equals("work") && i < 1){
+                                StartElement newST = modifyAndReturnStartElement(startElement, "type", newEventType);
+                                writer.add(modifyAndReturnStartElement(newST,"link", newChargerId));
+                                i++;
+                            } else if(at.getValue().equals("work")){
                                 writer.add(modifyAndReturnStartElement(startElement, "link", newWorkId));
                             } else if (at.getValue().equals("home")) {
                                 writer.add(modifyAndReturnStartElement(startElement, "link", newHomeId));
