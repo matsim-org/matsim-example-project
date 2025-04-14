@@ -7,7 +7,7 @@
 
 		<!-- Options: stable build based on pull requests (e.g. 16.0-PR2778), weekly (e.g. 15.0-2023w01) or official (e.g. 14.0) releases -->
 		<!--		<version>16.0-PR2509</version>-->
-		<version>2024.0</version>
+		<version>2025.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -24,7 +24,7 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.release>21</maven.compiler.release>
 	</properties>
 
 	<repositories>
