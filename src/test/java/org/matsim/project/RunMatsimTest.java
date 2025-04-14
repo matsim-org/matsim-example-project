@@ -54,8 +54,8 @@ public class RunMatsimTest {
 			final URL baseUrl = ExamplesUtils.getTestScenarioURL( "equil" );
 			final String fullUrl = IOUtils.extendUrl( baseUrl, "config.xml" ).toString();
 			String [] args = {fullUrl,
-				  "--config:controler.outputDirectory", utils.getOutputDirectory(),
-				  "--config:controler.lastIteration", "1"
+				  "--config:controller.outputDirectory", utils.getOutputDirectory(),
+				  "--config:controller.lastIteration", "1"
 			} ;
 			RunMatsim.main( args ) ;
 			{
