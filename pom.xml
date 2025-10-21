@@ -195,6 +195,7 @@
 										<Specification-Vendor>org.matsim</Specification-Vendor>
 										<Implementation-Vendor>org.matsim</Implementation-Vendor>
 										<Implementation-Version>${project.version}</Implementation-Version>
+                                        <Multi-Release>true</Multi-Release>
 									</manifestEntries>
 								</transformer>
 								<!-- The following merges the various GeoTools META-INF/services files         -->
