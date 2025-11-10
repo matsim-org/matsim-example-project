@@ -31,7 +31,7 @@ that the project is a maven project. If not: `Right click on pom.xml -> import a
 
 ### Java Version
 
-The project uses Java 11. Usually a suitable SDK is packaged within IntelliJ or Eclipse. Otherwise, one must install a 
+The project uses Java 21. Usually a suitable SDK is packaged within IntelliJ or Eclipse. Otherwise, one must install a 
 suitable sdk manually, which is available [here](https://openjdk.java.net/)
 
 ### Building and Running it locally
