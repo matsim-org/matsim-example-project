@@ -29,6 +29,7 @@ import org.matsim.core.events.EventsUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.examples.ExamplesUtils;
+import org.matsim.other.RunMatsimWithoutApplication;
 import org.matsim.testcases.MatsimTestUtils;
 import org.matsim.utils.eventsfilecomparison.ComparisonResult;
 
@@ -41,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author nagel
  *
  */
-public class RunMatsimTest {
+public class RunMatsimWithoutApplicationTest {
 
 	@RegisterExtension
 	public MatsimTestUtils utils = new MatsimTestUtils() ;
@@ -57,7 +58,7 @@ public class RunMatsimTest {
 				  "--config:controller.outputDirectory", utils.getOutputDirectory(),
 				  "--config:controller.lastIteration", "1"
 			} ;
-			RunMatsim.main( args ) ;
+			RunMatsimWithoutApplication.main( args ) ;
 			{
 				Population expected = PopulationUtils.createPopulation( ConfigUtils.createConfig() ) ;
 				PopulationUtils.readPopulation( expected, utils.getInputDirectory() + "/output_plans.xml.gz" );

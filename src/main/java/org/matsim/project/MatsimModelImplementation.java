@@ -30,14 +30,14 @@ import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
  *
  */
 @CommandLine.Command( header = ":: MyScenario ::", version = "1.0")
-public class RunMatsimApplication extends MATSimApplication {
+public class MatsimModelImplementation extends MATSimApplication {
 
-	public RunMatsimApplication() {
+	public MatsimModelImplementation() {
 		super("scenarios/equil/config.xml");
 	}
 
 	public static void main(String[] args) {
-		MATSimApplication.run(RunMatsimApplication.class, args);
+		MATSimApplication.runWithDefaults(MatsimModelImplementation.class, args);
 	}
 
 	@Override
