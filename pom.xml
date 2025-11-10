@@ -21,7 +21,7 @@
 
 		<!-- Don't change version here, but in the parent section above! -->
 		<matsim.version>${parent.version}</matsim.version>
-        <main.class>org.matsim.project.MatsimModelImplementation</main.class>
+        <main.class>org.matsim.project.RunMatsimModelImplementation</main.class>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
