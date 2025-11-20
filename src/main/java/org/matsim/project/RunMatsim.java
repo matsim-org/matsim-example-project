@@ -39,6 +39,7 @@ public class RunMatsim{
 		} else {
 			config = ConfigUtils.loadConfig( args );
 		}
+		// (this somewhat more complicated syntax above is needed as long as this is called from MATSimGUI with the config file as argument)
 
 		config.controller().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 
