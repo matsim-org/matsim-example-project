@@ -19,18 +19,20 @@
 package org.matsim.project;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.events.EventsUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.examples.ExamplesUtils;
 import org.matsim.testcases.MatsimTestUtils;
 import org.matsim.utils.eventsfilecomparison.ComparisonResult;
+import org.matsim.utils.eventsfilecomparison.EventsFileComparator;
 
 import java.net.URL;
 
@@ -42,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  */
 public class RunMatsimTest {
+	private static final Logger log = LogManager.getLogger( RunMatsimTest.class );
 
 	@RegisterExtension
 	public MatsimTestUtils utils = new MatsimTestUtils() ;
@@ -59,6 +62,7 @@ public class RunMatsimTest {
 			} ;
 			RunMatsim.main( args ) ;
 			{
+				log.info( "=== Starting population comparison ...");
 				Population expected = PopulationUtils.createPopulation( ConfigUtils.createConfig() ) ;
 				PopulationUtils.readPopulation( expected, utils.getInputDirectory() + "/output_plans.xml.gz" );
 
@@ -72,16 +76,18 @@ public class RunMatsimTest {
 				}
 
 
-//				boolean result = PopulationUtils.comparePopulations( expected, actual );
-//				Assert.assertTrue( result );
-				// (There are small differences in the score.  Seems that there were some floating point changes in Java 17, and the
-				// differ by JDK (e.g. oracle vs. ...).   So not testing this any more for the time being.  kai, jul'23
+				boolean result = PopulationUtils.comparePopulations( expected, actual );
+				Assertions.assertTrue( result );
+
+				log.info( "=== ... done with population comparison.");
 			}
 			{
+				log.info( "=== Starting events comparison ...");
 				String expected = utils.getInputDirectory() + "/output_events.xml.gz" ;
 				String actual = utils.getOutputDirectory() + "/output_events.xml.gz" ;
-				ComparisonResult result = EventsUtils.compareEventsFiles( expected, actual );
+				ComparisonResult result = new EventsFileComparator().runComparison( expected, actual );
 				assertEquals( ComparisonResult.FILES_ARE_EQUAL, result );
+				log.info( "=== ... done with events comparison.");
 			}
 
 		} catch ( Exception ee ) {
