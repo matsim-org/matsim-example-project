@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cologne Traffic Simulation — Scenario Maps</title>
+<style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px 40px; background: #f5f6fa; color: #2c3e50; }
+    h1 { font-size: 24px; border-bottom: 3px solid #2c3e50; padding-bottom: 10px; }
+    h2 { font-size: 18px; color: #34495e; margin-top: 30px; }
+    p.subtitle { color: #7f8c8d; margin-top: -10px; font-size: 14px; }
+    table { border-collapse: collapse; width: 100%; margin: 20px 0; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.1); }
+    th { background: #2c3e50; color: white; padding: 12px 16px; text-align: left; font-size: 13px; }
+    td { padding: 10px 16px; border-bottom: 1px solid #ecf0f1; font-size: 13px; }
+    tr:hover { background: #f0f3f7; }
+    .note { background: #eaf2f8; border-left: 4px solid #2980b9; padding: 12px 16px; margin: 20px 0; border-radius: 0 6px 6px 0; font-size: 13px; }
+    .layers { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+    .layer-card { background: white; border-radius: 6px; padding: 12px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); flex: 1; min-width: 200px; }
+    .layer-card h3 { margin: 0 0 4px 0; font-size: 14px; color: #2c3e50; }
+    .layer-card p { margin: 0; font-size: 12px; color: #7f8c8d; }
+</style>
+</head>
+<body>
+<h1>Cologne Traffic Simulation — Scenario Comparison</h1>
+<p class="subtitle">Agent-Based Microsimulation | Departure Time Coordination Scenarios | 20,000 Agents</p>
+
+<h2>Per-Scenario Interactive Maps</h2>
+<p>Click a scenario name to open its interactive map. Each map has four togglable layers:</p>
+
+<div class="layers">
+    <div class="layer-card">
+        <h3>Traffic Volume</h3>
+        <p>Link width and color by daily vehicle count. Blue (low) → Red (high).</p>
+    </div>
+    <div class="layer-card">
+        <h3>Congestion (V/C)</h3>
+        <p>Volume-to-Capacity ratio. Green (free-flow) → Red (over capacity).</p>
+    </div>
+    <div class="layer-card">
+        <h3>Speed vs Free-Flow</h3>
+        <p>Actual speed as percentage of free-flow. Green (fast) → Red (slow).</p>
+    </div>
+    <div class="layer-card">
+        <h3>AM Peak Congestion</h3>
+        <p>V/C ratio during 07:00–09:00 AM peak only.</p>
+    </div>
+</div>
+
+<table>
+<thead>
+<tr>
+    <th>Scenario</th>
+    <th>Avg TT</th>
+    <th>vs Baseline</th>
+    <th>Peak TT</th>
+    <th>vs Baseline</th>
+    <th>P95 TT</th>
+    <th>VKT</th>
+    <th>VHT</th>
+    <th>Trips</th>
+</tr>
+</thead>
+<tbody>
+
+        <tr>
+            <td><a href="baseline_0pct.html" style="color:#2980b9;font-weight:bold;text-decoration:none;">Baseline (0%)</a></td>
+            <td>8.79 min</td>
+            <td><span style="color:#888;">—</span></td>
+            <td>9.32 min</td>
+            <td><span style="color:#888;">—</span></td>
+            <td>16.15 min</td>
+            <td>177,605 km</td>
+            <td>5,819.9 hrs</td>
+            <td>39,732</td>
+        </tr>
+        <tr>
+            <td><a href="coordinated_1pct.html" style="color:#2980b9;font-weight:bold;text-decoration:none;">Coordinated 1%</a></td>
+            <td>8.78 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-0.14%</span></td>
+            <td>9.30 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-0.29%</span></td>
+            <td>16.12 min</td>
+            <td>177,500 km</td>
+            <td>5,811.8 hrs</td>
+            <td>39,732</td>
+        </tr>
+        <tr>
+            <td><a href="coordinated_2pct.html" style="color:#2980b9;font-weight:bold;text-decoration:none;">Coordinated 2%</a></td>
+            <td>8.76 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-0.37%</span></td>
+            <td>9.27 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-0.59%</span></td>
+            <td>16.06 min</td>
+            <td>177,401 km</td>
+            <td>5,798.6 hrs</td>
+            <td>39,732</td>
+        </tr>
+        <tr>
+            <td><a href="coordinated_5pct.html" style="color:#2980b9;font-weight:bold;text-decoration:none;">Coordinated 5%</a></td>
+            <td>8.71 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-0.87%</span></td>
+            <td>9.19 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-1.40%</span></td>
+            <td>15.95 min</td>
+            <td>177,158 km</td>
+            <td>5,769.2 hrs</td>
+            <td>39,732</td>
+        </tr>
+        <tr>
+            <td><a href="coordinated_10pct.html" style="color:#2980b9;font-weight:bold;text-decoration:none;">Coordinated 10%</a></td>
+            <td>8.64 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-1.73%</span></td>
+            <td>9.05 min</td>
+            <td><span style="color:#27ae60;font-weight:bold;">-2.88%</span></td>
+            <td>15.77 min</td>
+            <td>176,768 km</td>
+            <td>5,719.1 hrs</td>
+            <td>39,732</td>
+        </tr>
+</tbody>
+</table>
+
+<div class="note">
+    <strong>How to read the maps:</strong> Use the layer control (top-right of each map) to toggle between
+    Traffic Volume, Congestion, Speed, and Peak Hour views. Hover over any link to see detailed metrics.
+    The KPI summary panel (top-right corner) shows aggregate scenario statistics.
+</div>
+
+</body>
+</html>
