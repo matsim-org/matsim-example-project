@@ -140,7 +140,7 @@ public class CologneScenarioRunner {
         config.network().setInputFile("../../" + NETWORK_FILE);
 
         // Plans
-        config.plans().setInputPlansFile("../../" + PLANS_FILE);
+        config.plans().setInputFile("../../" + PLANS_FILE);
 
         // Global
         config.global().setCoordinateSystem("EPSG:25832");
@@ -198,13 +198,13 @@ public class CologneScenarioRunner {
         ReplanningConfigGroup.StrategySettings reRoute = new ReplanningConfigGroup.StrategySettings();
         reRoute.setStrategyName("ReRoute");
         reRoute.setWeight(0.15);
-        reRoute.setDisableAfterIteration((int) (numIterations * 0.8));
+        reRoute.setDisableAfter((int) (numIterations * 0.8));
         replanning.addStrategySettings(reRoute);
 
         ReplanningConfigGroup.StrategySettings timeAlloc = new ReplanningConfigGroup.StrategySettings();
         timeAlloc.setStrategyName("TimeAllocationMutator");
         timeAlloc.setWeight(0.05);
-        timeAlloc.setDisableAfterIteration((int) (numIterations * 0.8));
+        timeAlloc.setDisableAfter((int) (numIterations * 0.8));
         replanning.addStrategySettings(timeAlloc);
 
         // Time allocation mutator

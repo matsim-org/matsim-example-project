@@ -77,8 +77,4 @@ public class CologneDashboardProvider implements DashboardProvider {
 		return 0;
 	}
 
-	@Override
-	public boolean isDefault() {
-		return false;
-	}
 }

@@ -3,13 +3,12 @@ package org.matsim.dashboard;
 import org.matsim.simwrapper.Dashboard;
 import org.matsim.simwrapper.Header;
 import org.matsim.simwrapper.Layout;
-import org.matsim.simwrapper.viz.ColorScheme;
-import org.matsim.simwrapper.viz.MapPlot;
+import org.matsim.simwrapper.viz.Links;
 import org.matsim.simwrapper.viz.Table;
 
 /**
  * Custom dashboard for Cologne traffic volume visualization.
- * Displays link-level traffic volumes on a map with speed-based coloring
+ * Displays link-level traffic volumes using the standard Links visualization
  * and a detailed statistics table.
  */
 public class CologneTrafficDashboard implements Dashboard {
@@ -20,33 +19,18 @@ public class CologneTrafficDashboard implements Dashboard {
 		header.title = "Cologne Traffic Volumes";
 		header.description = "Link-level traffic volumes and average speeds for the Cologne road network.";
 
-		// Row 1: Traffic volume map
-		layout.row("map")
-			.el(MapPlot.class, (viz, data) -> {
+		// Row 1: Traffic volume link plot
+		layout.row("volumes")
+			.el(Links.class, (viz, data) -> {
 				viz.title = "Daily Traffic Volumes - Cologne";
 				viz.height = 12.0;
-
-				viz.display.fill.dataset = data.compute(
-					org.matsim.application.analysis.traffic.CreateAvroNetwork.class,
-					"network.avro"
-				);
-
-				String trafficCsv = data.compute(
+				viz.datasets.csvFile = data.compute(
 					org.matsim.application.analysis.traffic.TrafficAnalysis.class,
 					"traffic_stats_by_link_daily.csv"
 				);
-
-				// Line width proportional to traffic volume
-				viz.display.lineWidth.dataset = trafficCsv;
-				viz.display.lineWidth.columnName = "simulated_traffic_volume";
-				viz.display.lineWidth.scaleFactor = 20000d;
-				viz.display.lineWidth.join = "link_id";
-
-				// Color by average speed (red=slow, blue=fast)
-				viz.display.color.dataset = trafficCsv;
-				viz.display.color.columnName = "avg_speed";
-				viz.display.color.join = "link_id";
-				viz.display.color.setColorRamp(ColorScheme.RdYlBu, 5, true);
+				viz.network = data.output("output_network.xml.gz");
+				viz.display.width.columnName = "simulated_traffic_volume";
+				viz.display.width.scaleFactor = 20000d;
 			});
 
 		// Row 2: Link-level statistics table

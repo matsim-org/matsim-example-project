@@ -49,8 +49,8 @@ public class RunCologneSimulation extends MATSimApplication {
 		}
 
 		SimWrapperConfigGroup sw = ConfigUtils.addOrGetModule(config, SimWrapperConfigGroup.class);
-		sw.defaultDashboards = SimWrapperConfigGroup.Mode.enabled;
-		sw.sampleSize = config.qsim().getFlowCapFactor();
+		sw.setDefaultDashboards(SimWrapperConfigGroup.Mode.enabled);
+		sw.setSampleSize(config.qsim().getFlowCapFactor());
 
 		return config;
 	}
