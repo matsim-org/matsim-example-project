@@ -1,0 +1,8 @@
+title: "Cologne Traffic Simulation"
+description: "MATSim simulation results for the Cologne metropolitan area"
+
+projection: "EPSG:25832"
+
+map:
+  center: [6.9578, 50.9375]
+  zoom: 11
