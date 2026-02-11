@@ -586,15 +586,134 @@ def astar_td(network: CologneNetwork, origin_node: str, dest_node: str,
 # PARALLEL ROUTING INFRASTRUCTURE
 # ============================================================================
 
-# Module-level global: set in parent process before fork so workers inherit it
-# via copy-on-write memory sharing (zero serialization cost on Linux).
-_SHARED_NETWORK = None
+class _CompactGraph:
+    """
+    Compact, numpy-array-based routing graph for parallel A*.
+
+    Converts string-keyed dicts and dataclass objects into integer-indexed
+    numpy arrays.  Benefits:
+      - ~3x smaller pickle size (arrays serialize as raw buffers)
+      - Faster A* inner loop (array indexing vs dict lookups)
+      - Works with both fork (Linux) and spawn (Windows) pool contexts
+    """
+    __slots__ = ['node_ids', 'node_idx', 'node_x', 'node_y',
+                 'link_ids', 'link_from', 'link_to', 'link_length', 'link_tt',
+                 'adj_links']
+
+    def __init__(self, network):
+        # Node ID <-> integer index
+        self.node_ids = list(network.nodes.keys())
+        self.node_idx = {nid: i for i, nid in enumerate(self.node_ids)}
+        n = len(self.node_ids)
+
+        self.node_x = np.empty(n)
+        self.node_y = np.empty(n)
+        for i, nid in enumerate(self.node_ids):
+            self.node_x[i] = network.nodes[nid].x
+            self.node_y[i] = network.nodes[nid].y
+
+        # Link data as contiguous arrays
+        self.link_ids = list(network.links.keys())
+        _lidx = {lid: i for i, lid in enumerate(self.link_ids)}
+        m = len(self.link_ids)
+
+        self.link_from = np.empty(m, dtype=np.int32)
+        self.link_to = np.empty(m, dtype=np.int32)
+        self.link_length = np.empty(m)
+        self.link_tt = np.empty((m, NUM_TIME_BINS))
+
+        for i, lid in enumerate(self.link_ids):
+            lk = network.links[lid]
+            self.link_from[i] = self.node_idx[lk.from_node]
+            self.link_to[i] = self.node_idx[lk.to_node]
+            self.link_length[i] = lk.length
+            self.link_tt[i] = lk.bin_travel_times
+
+        # Adjacency: per-node list of link indices
+        adj = [[] for _ in range(n)]
+        for nid, lids in network.adjacency.items():
+            ni = self.node_idx[nid]
+            adj[ni] = [_lidx[lid] for lid in lids if lid in _lidx]
+        self.adj_links = adj
 
 
-def _route_single_trip(args):
-    """Worker function: route one origin-destination trip using the shared network."""
+def _astar_compact(graph, origin_id, dest_id, departure_time):
+    """
+    A* on _CompactGraph — integer-indexed, array-based.
+
+    Returns (link_id_list, travel_time, distance), same contract as astar_td.
+    """
+    origin = graph.node_idx[origin_id]
+    dest = graph.node_idx[dest_id]
+    dest_x = graph.node_x[dest]
+    dest_y = graph.node_y[dest]
+    node_x = graph.node_x
+    node_y = graph.node_y
+    link_to = graph.link_to
+    link_tt = graph.link_tt
+    adj = graph.adj_links
+
+    g = {origin: 0.0}
+    prev = {}
+    visited = set()
+
+    h0 = math.sqrt((node_x[origin] - dest_x) ** 2 +
+                    (node_y[origin] - dest_y) ** 2) / _MAX_SPEED
+    heap = [(h0, 0.0, origin)]
+
+    while heap:
+        _f, d, u = heapq.heappop(heap)
+        if u in visited:
+            continue
+        visited.add(u)
+
+        if u == dest:
+            path_li = []
+            node = dest
+            while node in prev:
+                li = prev[node]
+                path_li.append(li)
+                node = int(graph.link_from[li])
+            path_li.reverse()
+            path = [graph.link_ids[li] for li in path_li]
+            dist = float(np.sum(graph.link_length[path_li])) if path_li else 0.0
+            return path, d, dist
+
+        cur_time = departure_time + d
+        b = int(cur_time / TIME_BIN_SIZE) % NUM_TIME_BINS
+
+        for li in adj[u]:
+            v = int(link_to[li])
+            if v in visited:
+                continue
+            tt = float(link_tt[li, b])
+            new_g = d + tt
+            if new_g < g.get(v, float('inf')):
+                g[v] = new_g
+                prev[v] = li
+                h = math.sqrt((node_x[v] - dest_x) ** 2 +
+                              (node_y[v] - dest_y) ** 2) / _MAX_SPEED
+                heapq.heappush(heap, (new_g + h, new_g, v))
+
+    return [], float('inf'), 0.0
+
+
+# Module-level global: set before pool creation.
+# On Linux (fork): inherited via copy-on-write — zero serialization cost.
+# On Windows (spawn): sent via initializer — pickled once per worker.
+_SHARED_COMPACT = None
+
+
+def _init_compact_worker(cg):
+    """Pool initializer for spawn-based contexts (Windows)."""
+    global _SHARED_COMPACT
+    _SHARED_COMPACT = cg
+
+
+def _route_compact_trip(args):
+    """Worker function: route one trip on the shared compact graph."""
     origin_node, dest_node, departure_time = args
-    return astar_td(_SHARED_NETWORK, origin_node, dest_node, departure_time)
+    return _astar_compact(_SHARED_COMPACT, origin_node, dest_node, departure_time)
 
 
 # ============================================================================
@@ -825,18 +944,26 @@ def simulate_traffic_parallel(network: CologneNetwork, persons: List[Person],
     Parallel version of simulate_traffic.
 
     Routes ALL agent trips concurrently using a process pool, then accumulates
-    flows sequentially.  On Linux the fork start-method gives workers zero-copy
-    access to the parent's network data via copy-on-write pages.
+    flows sequentially.
+
+    Cross-platform:
+      - Linux (fork available): workers inherit compact graph via COW — fast.
+      - Windows (spawn only): compact graph is pickled once per worker via
+        initializer.  The numpy-array-based _CompactGraph is ~3x smaller
+        than the full CologneNetwork, keeping serialization practical.
 
     This is also more faithful to MATSim semantics: all agents are simulated
     against the same travel-time snapshot (no intra-iteration feedback).
     """
-    global _SHARED_NETWORK
-    _SHARED_NETWORK = network          # workers inherit via fork COW
+    global _SHARED_COMPACT
     network.reset_flows()
 
     if num_workers <= 0:
         num_workers = max(1, mp.cpu_count())
+
+    # ── Build compact graph (fast, avoids pickling full dataclass objects) ─
+    compact = _CompactGraph(network)
+    _SHARED_COMPACT = compact          # for fork-based workers (Linux)
 
     # ── Build task list ──────────────────────────────────────────────────
     tasks = []
@@ -851,14 +978,14 @@ def simulate_traffic_parallel(network: CologneNetwork, persons: List[Person],
         work_act  = plan.activities[1]
         home_act2 = plan.activities[2]
 
-        # Trip 1: Home → Work
+        # Trip 1: Home -> Work
         o1 = network.links[home_act.link_id].from_node
         d1 = network.links[work_act.link_id].from_node
         t1 = home_act.end_time if home_act.end_time else MEAN_DEPARTURE
         tasks.append((o1, d1, t1))
         task_meta.append((idx, 0, t1, home_act.link_id, work_act.link_id))
 
-        # Trip 2: Work → Home
+        # Trip 2: Work -> Home
         o2 = network.links[work_act.link_id].from_node
         d2 = network.links[home_act2.link_id].from_node
         t2 = work_act.end_time if work_act.end_time else t1 + WORK_TYPICAL_DURATION
@@ -871,17 +998,20 @@ def simulate_traffic_parallel(network: CologneNetwork, persons: List[Person],
 
     # ── Parallel routing ─────────────────────────────────────────────────
     t_start = time_mod.time()
+    chunk = max(1, len(tasks) // (num_workers * 4))
 
     try:
-        ctx = mp.get_context('fork')          # zero-copy on Linux
-        chunk = max(1, len(tasks) // (num_workers * 4))
+        # Try fork first (Linux) — zero-copy via COW
+        ctx = mp.get_context('fork')
         with ctx.Pool(num_workers) as pool:
-            results = list(pool.imap(_route_single_trip, tasks, chunksize=chunk))
+            results = list(pool.imap(_route_compact_trip, tasks, chunksize=chunk))
     except (RuntimeError, ValueError):
-        # Fallback: sequential (e.g. fork not available)
+        # fork unavailable (Windows/macOS) — use spawn + initializer
         if not quiet:
-            print("    (fork unavailable — falling back to sequential routing)")
-        results = [_route_single_trip(t) for t in tasks]
+            print("    (using spawn pool — one-time init per worker)", flush=True)
+        with mp.Pool(num_workers, initializer=_init_compact_worker,
+                     initargs=(compact,)) as pool:
+            results = list(pool.imap(_route_compact_trip, tasks, chunksize=chunk))
 
     elapsed = time_mod.time() - t_start
     if not quiet:
