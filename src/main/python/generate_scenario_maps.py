@@ -325,16 +325,28 @@ def run_scenario_with_network(
     coordination_fraction: float,
     num_agents: int = sim.NUM_AGENTS,
     num_iterations: int = sim.NUM_ITERATIONS,
+    network_mode: str = "synthetic",
 ):
     """Run a scenario and return (network, kpi, trips) for visualization."""
     print(f"\n{'='*70}")
     print(f"  SCENARIO: {scenario_name}")
+    print(f"  Network: {network_mode}")
     print(f"  Coordination: {coordination_fraction*100:.0f}% of agents")
     print(f"{'='*70}")
 
-    print("\n  Building Cologne network...")
     network = sim.CologneNetwork()
-    network.build()
+    if network_mode == "real":
+        nodes_path = os.path.join(sim.DATA_DIR, "nodes.csv")
+        links_path = os.path.join(sim.DATA_DIR, "links.csv")
+        if not os.path.exists(nodes_path) or not os.path.exists(links_path):
+            print(f"  ERROR: Real network data not found at {sim.DATA_DIR}")
+            print(f"  Run download_cologne_data.py first.")
+            sys.exit(1)
+        print("\n  Loading real Cologne network...")
+        network.load_from_csv(nodes_path, links_path)
+    else:
+        print("\n  Building synthetic Cologne network...")
+        network.build()
 
     print("  Generating population...")
     persons = sim.generate_population(network, num_agents)
@@ -378,13 +390,26 @@ def run_scenario_with_network(
 # ---------------------------------------------------------------------------
 
 def main():
+    import argparse
     import time as time_mod
+
+    parser = argparse.ArgumentParser(description="Cologne Traffic Simulation — Map Generator")
+    parser.add_argument("--network", choices=["synthetic", "real"], default="synthetic",
+                        help="Network source: 'synthetic' (built-in) or 'real' (OSM data)")
+    parser.add_argument("--agents", type=int, default=sim.NUM_AGENTS,
+                        help=f"Number of agents (default: {sim.NUM_AGENTS})")
+    parser.add_argument("--iterations", type=int, default=sim.NUM_ITERATIONS,
+                        help=f"Iterations per scenario (default: {sim.NUM_ITERATIONS})")
+    args = parser.parse_args()
 
     overall_start = time_mod.time()
 
     print("=" * 70)
     print("  COLOGNE TRAFFIC SIMULATION — MAP GENERATOR")
     print("=" * 70)
+    print(f"  Network: {args.network}")
+    print(f"  Agents: {args.agents}")
+    print(f"  Iterations: {args.iterations}")
 
     output_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
@@ -403,7 +428,11 @@ def main():
     all_kpis = []
 
     for scenario_name, fraction in scenarios:
-        network, kpi, trips = run_scenario_with_network(scenario_name, fraction)
+        network, kpi, trips = run_scenario_with_network(
+            scenario_name, fraction,
+            num_agents=args.agents, num_iterations=args.iterations,
+            network_mode=args.network,
+        )
         all_kpis.append(kpi)
 
         print(f"\n  Generating map for {scenario_name}...")
