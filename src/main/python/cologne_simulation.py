@@ -37,7 +37,9 @@ import time as time_mod
 import os
 import csv
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, field
+from multiprocessing import cpu_count
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -515,22 +517,37 @@ class CologneNetwork:
 
 
 # ============================================================================
-# SHORTEST PATH (Time-dependent Dijkstra)
+# SHORTEST PATH (Time-dependent A*)
 # ============================================================================
 
-def dijkstra_td(network: CologneNetwork, origin_node: str, dest_node: str,
-                departure_time: float) -> Tuple[List[str], float, float]:
+# Maximum free-speed in the network (autobahn ~120 km/h = 33.33 m/s).
+# Used as the heuristic divisor so A* remains admissible.
+_MAX_SPEED = 33.33
+
+
+def astar_td(network: CologneNetwork, origin_node: str, dest_node: str,
+             departure_time: float) -> Tuple[List[str], float, float]:
     """
-    Time-dependent Dijkstra using time-binned travel times.
+    Time-dependent A* using Euclidean distance heuristic.
+    Much faster than plain Dijkstra for point-to-point queries because the
+    heuristic prunes large portions of the search space.
     Returns (route_link_ids, total_travel_time, total_distance).
     """
-    dist = {origin_node: 0.0}
+    dest = network.nodes[dest_node]
+    dest_x, dest_y = dest.x, dest.y
+    nodes = network.nodes
+
+    g = {origin_node: 0.0}
     prev_link = {}
     visited = set()
-    heap = [(0.0, origin_node)]
+
+    # Heuristic: Euclidean distance / max network speed (admissible lower bound)
+    ox, oy = nodes[origin_node].x, nodes[origin_node].y
+    h0 = math.sqrt((ox - dest_x) ** 2 + (oy - dest_y) ** 2) / _MAX_SPEED
+    heap = [(h0, 0.0, origin_node)]  # (f=g+h, g, node)
 
     while heap:
-        d, u = heapq.heappop(heap)
+        _f, d, u = heapq.heappop(heap)
         if u in visited:
             continue
         visited.add(u)
@@ -553,11 +570,13 @@ def dijkstra_td(network: CologneNetwork, origin_node: str, dest_node: str,
             if v in visited:
                 continue
             tt = link.get_travel_time(current_time)
-            new_dist = d + tt
-            if new_dist < dist.get(v, float('inf')):
-                dist[v] = new_dist
+            new_g = d + tt
+            if new_g < g.get(v, float('inf')):
+                g[v] = new_g
                 prev_link[v] = lid
-                heapq.heappush(heap, (new_dist, v))
+                vn = nodes[v]
+                h = math.sqrt((vn.x - dest_x) ** 2 + (vn.y - dest_y) ** 2) / _MAX_SPEED
+                heapq.heappush(heap, (new_g + h, new_g, v))
 
     return [], float('inf'), 0.0
 
@@ -712,7 +731,7 @@ def simulate_traffic(network: CologneNetwork, persons: List[Person]) -> List[Tri
         dest_node = network.links[work_act.link_id].from_node
         dep_time = home_act.end_time if home_act.end_time else MEAN_DEPARTURE
 
-        route, route_tt, route_dist = dijkstra_td(network, origin_node, dest_node, dep_time)
+        route, route_tt, route_dist = astar_td(network, origin_node, dest_node, dep_time)
 
         if route:
             plan.legs[0].route = route
@@ -745,7 +764,7 @@ def simulate_traffic(network: CologneNetwork, persons: List[Person]) -> List[Tri
         dest_node2 = network.links[home_act2.link_id].from_node
         ret_time = work_act.end_time if work_act.end_time else dep_time + WORK_TYPICAL_DURATION
 
-        route2, route_tt2, route_dist2 = dijkstra_td(network, origin_node2, dest_node2, ret_time)
+        route2, route_tt2, route_dist2 = astar_td(network, origin_node2, dest_node2, ret_time)
 
         if route2:
             plan.legs[1].route = route2
@@ -894,35 +913,36 @@ def compute_kpis(name: str, trips: List[TripRecord], num_agents: int) -> Scenari
 
 def run_scenario(scenario_name: str, coordination_fraction: float,
                  num_agents: int = NUM_AGENTS, num_iterations: int = NUM_ITERATIONS,
-                 network_mode: str = "synthetic") -> ScenarioKPI:
-    print(f"\n{'='*70}")
-    print(f"  SCENARIO: {scenario_name}")
-    print(f"  Network: {network_mode}")
-    print(f"  Coordination: {coordination_fraction*100:.0f}% of agents")
-    print(f"  Agents: {num_agents}, Iterations: {num_iterations}")
-    print(f"{'='*70}")
+                 network_mode: str = "synthetic", quiet: bool = False) -> ScenarioKPI:
+    _print = (lambda *a, **k: None) if quiet else print
+    _print(f"\n{'='*70}")
+    _print(f"  SCENARIO: {scenario_name}")
+    _print(f"  Network: {network_mode}")
+    _print(f"  Coordination: {coordination_fraction*100:.0f}% of agents")
+    _print(f"  Agents: {num_agents}, Iterations: {num_iterations}")
+    _print(f"{'='*70}")
 
     network = CologneNetwork()
     if network_mode == "real":
         nodes_path = os.path.join(DATA_DIR, "nodes.csv")
         links_path = os.path.join(DATA_DIR, "links.csv")
         if not os.path.exists(nodes_path) or not os.path.exists(links_path):
-            print(f"  ERROR: Real network data not found at {DATA_DIR}")
-            print(f"  Run download_cologne_data.py first.")
+            _print(f"  ERROR: Real network data not found at {DATA_DIR}")
+            _print(f"  Run download_cologne_data.py first.")
             sys.exit(1)
-        print("\n  Loading real Cologne network...")
+        _print("\n  Loading real Cologne network...")
         network.load_from_csv(nodes_path, links_path)
     else:
-        print("\n  Building synthetic Cologne network...")
+        _print("\n  Building synthetic Cologne network...")
         network.build()
 
-    print("  Generating population...")
+    _print("  Generating population...")
     persons = generate_population(network, num_agents)
 
     if coordination_fraction > 0:
         modified = apply_coordination(persons, coordination_fraction)
-        print(f"  Coordination applied: {modified} agents modified "
-              f"({modified/num_agents*100:.1f}% actual)")
+        _print(f"  Coordination applied: {modified} agents modified "
+               f"({modified/num_agents*100:.1f}% actual)")
 
     rng = random.Random(RANDOM_SEED + 1000)
     all_trip_records = []  # collect last N iterations for averaging
@@ -948,9 +968,9 @@ def run_scenario(scenario_name: str, coordination_fraction: float,
             if prev_avg_tt is not None and prev_avg_tt > 0:
                 change = abs(avg_tt - prev_avg_tt) / prev_avg_tt * 100
                 convergence = f"  delta={change:.2f}%"
-            print(f"  Iter {iteration:3d}/{num_iterations}: "
-                  f"avg_score={avg_score:8.1f}  avg_tt={avg_tt:6.2f}min  "
-                  f"trips={len(trips):6d}  [{elapsed:.1f}s]{convergence}")
+            _print(f"  Iter {iteration:3d}/{num_iterations}: "
+                   f"avg_score={avg_score:8.1f}  avg_tt={avg_tt:6.2f}min  "
+                   f"trips={len(trips):6d}  [{elapsed:.1f}s]{convergence}")
 
         prev_avg_tt = avg_tt
 
@@ -967,14 +987,14 @@ def run_scenario(scenario_name: str, coordination_fraction: float,
     kpis.num_trips = len(all_trip_records) // AVG_LAST_N
     kpis.vkt_km /= AVG_LAST_N
     kpis.vht_hours /= AVG_LAST_N
-    print(f"\n  Final KPIs for {scenario_name}:")
-    print(f"    Avg Travel Time:      {kpis.avg_travel_time_min:8.2f} min")
-    print(f"    P95 Travel Time:      {kpis.p95_travel_time_min:8.2f} min")
-    print(f"    Peak-Hour Avg TT:     {kpis.peak_hour_avg_travel_time_min:8.2f} min")
-    print(f"    VKT:                  {kpis.vkt_km:12.0f} km")
-    print(f"    VHT:                  {kpis.vht_hours:10.1f} hours")
-    print(f"    Trips:                {kpis.num_trips:8d}")
-    print(f"    Agents:               {kpis.num_agents:8d}")
+    _print(f"\n  Final KPIs for {scenario_name}:")
+    _print(f"    Avg Travel Time:      {kpis.avg_travel_time_min:8.2f} min")
+    _print(f"    P95 Travel Time:      {kpis.p95_travel_time_min:8.2f} min")
+    _print(f"    Peak-Hour Avg TT:     {kpis.peak_hour_avg_travel_time_min:8.2f} min")
+    _print(f"    VKT:                  {kpis.vkt_km:12.0f} km")
+    _print(f"    VHT:                  {kpis.vht_hours:10.1f} hours")
+    _print(f"    Trips:                {kpis.num_trips:8d}")
+    _print(f"    Agents:               {kpis.num_agents:8d}")
 
     return kpis
 
@@ -1032,6 +1052,14 @@ def write_csv(results: List[ScenarioKPI], path: str):
                              r.num_trips, r.num_agents])
 
 
+def _run_scenario_worker(args_tuple):
+    """Wrapper for multiprocessing — unpacks arguments for run_scenario."""
+    name, fraction, num_agents, num_iterations, network_mode = args_tuple
+    return run_scenario(name, fraction, num_agents=num_agents,
+                        num_iterations=num_iterations, network_mode=network_mode,
+                        quiet=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Cologne Traffic Microsimulation")
     parser.add_argument("--network", choices=["synthetic", "real"], default="synthetic",
@@ -1040,6 +1068,9 @@ def main():
                         help=f"Number of agents (default: {NUM_AGENTS})")
     parser.add_argument("--iterations", type=int, default=NUM_ITERATIONS,
                         help=f"Iterations per scenario (default: {NUM_ITERATIONS})")
+    parser.add_argument("--workers", type=int, default=0,
+                        help="Number of parallel workers (0=sequential, default). "
+                             "Set to number of CPU cores (e.g. 5) to run scenarios in parallel.")
     args = parser.parse_args()
 
     overall_start = time_mod.time()
@@ -1051,6 +1082,7 @@ def main():
     print(f"  Network: {args.network}")
     print(f"  Agents: {args.agents}")
     print(f"  Iterations per scenario: {args.iterations}")
+    print(f"  Workers: {args.workers if args.workers > 0 else 'sequential'}")
     print(f"  Scenarios: Baseline + 4 coordination levels (1%, 2%, 5%, 10%)")
     print()
 
@@ -1066,11 +1098,18 @@ def main():
         ("Coordinated 10%", 0.10),
     ]
 
-    results = []
-    for name, fraction in scenarios:
-        kpi = run_scenario(name, fraction, num_agents=args.agents,
-                           num_iterations=args.iterations, network_mode=args.network)
-        results.append(kpi)
+    if args.workers > 0:
+        print(f"  Running {len(scenarios)} scenarios in parallel ({args.workers} workers)...")
+        work_items = [(name, fraction, args.agents, args.iterations, args.network)
+                      for name, fraction in scenarios]
+        with ProcessPoolExecutor(max_workers=args.workers) as executor:
+            results = list(executor.map(_run_scenario_worker, work_items))
+    else:
+        results = []
+        for name, fraction in scenarios:
+            kpi = run_scenario(name, fraction, num_agents=args.agents,
+                               num_iterations=args.iterations, network_mode=args.network)
+            results.append(kpi)
 
     table = format_comparison_table(results)
     print(table)
