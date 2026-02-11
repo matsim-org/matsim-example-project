@@ -1,18 +1,92 @@
 # matsim-example-project
 
-A small example of how to use MATSim as a library.
+A MATSim-based traffic microsimulation project featuring a **Cologne departure time coordination** study. The project includes both Java (MATSim library) and Python simulation components.
 
 By default, this project uses the latest (pre-)release. In order to use a different version, edit `pom.xml`.
 
-A recommended directory structure is as follows:
+---
+
+## Cologne Traffic Simulation
+
+An agent-based traffic microsimulation for Cologne that evaluates **departure time coordination** as a congestion management policy. The simulation implements the core MATSim loop — routing, congestion, scoring, and replanning — and tests what happens when 1%, 2%, 5%, or 10% of peak-hour commuters shift their departure times off-peak.
+
+### Features
+
+- **20,000 agents** simulated over 25 iterations with BPR congestion + MSA averaging
+- **Parallel A\* routing** using multiprocessing for fast iteration times
+- **5 scenarios**: Baseline + 4 coordination levels (1%, 2%, 5%, 10% shift)
+- **Interactive maps** with togglable layers (traffic volume, congestion, speed, peak-hour V/C)
+- **Real OSM network** support via Overpass API download
+
+### Python Prerequisites
+
+```sh
+pip install numpy folium pyproj requests
+```
+
+### Quick Start
+
+```sh
+# Run the simulation with defaults (synthetic network, 20k agents, 25 iterations)
+python src/main/python/cologne_simulation.py
+
+# Use fewer agents and iterations for a quick test
+python src/main/python/cologne_simulation.py --agents 1000 --iterations 10
+
+# Generate interactive HTML maps from the results
+python src/main/python/generate_scenario_maps.py
+```
+
+### CLI Options
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--network` | `synthetic` | Network source: `synthetic` (built-in) or `real` (OSM data) |
+| `--agents` | `20000` | Number of agents to simulate |
+| `--iterations` | `25` | Iterations per scenario |
+| `--workers` | `0` | Parallel workers for scenario-level execution (0 = sequential) |
+| `--routing-workers` | `0` | Parallel workers for A\* routing (0 = auto-detect CPUs) |
+
+### Using the Real Cologne Network
+
+```sh
+# 1. Download road network from OpenStreetMap
+python src/main/python/download_cologne_data.py
+
+# 2. Run simulation with real network
+python src/main/python/cologne_simulation.py --network real
+
+# 3. Generate maps
+python src/main/python/generate_scenario_maps.py --network real
+```
+
+### Output
+
+Results are saved to `scenarios/cologne/output/`:
+- `kpi_comparison.csv` — KPI summary across all scenarios
+- `kpi_comparison.txt` — Human-readable comparison table
+- `maps/` — Interactive HTML maps per scenario + an `index.html` linking them all
+
+---
+
+## Project Structure
+
+```
+src/main/java/org/matsim/project/          # Java MATSim entry points
+src/main/java/org/matsim/project/cologne/  # Java Cologne scenario classes
+src/main/python/                           # Python simulation & visualization
+scenarios/cologne/                         # Cologne scenario input/output
+```
+
+A recommended directory structure for additional scenarios:
 * `src` for sources
 * `original-input-data` for original input data (typically not in MATSim format)
 * `scenarios` for MATSim scenarios, i.e. MATSim input and output data.  A good way is the following:
   * One subdirectory for each scenario, e.g. `scenarios/mySpecialScenario01`.
   * This minimally contains a config file, a network file, and a population file.
   * Output goes one level down, e.g. `scenarios/mySpecialScenario01/output-from-a-good-run/...`.
-  
-  
+
+
 ### Import into eclipse
 
 1. download a modern version of eclipse. This should have maven and git included by default.
