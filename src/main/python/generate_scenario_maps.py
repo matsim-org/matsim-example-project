@@ -361,7 +361,7 @@ def run_scenario_with_network(
     AVG_LAST_N = 5
 
     for iteration in range(num_iterations):
-        trips = sim.simulate_traffic(network, persons)
+        trips = sim.simulate_traffic_parallel(network, persons)
         network.update_travel_times_msa(iteration)
 
         for person in persons:

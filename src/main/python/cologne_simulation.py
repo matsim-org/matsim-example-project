@@ -39,6 +39,7 @@ import csv
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, field
+import multiprocessing as mp
 from multiprocessing import cpu_count
 from typing import Dict, List, Optional, Tuple
 
@@ -582,6 +583,21 @@ def astar_td(network: CologneNetwork, origin_node: str, dest_node: str,
 
 
 # ============================================================================
+# PARALLEL ROUTING INFRASTRUCTURE
+# ============================================================================
+
+# Module-level global: set in parent process before fork so workers inherit it
+# via copy-on-write memory sharing (zero serialization cost on Linux).
+_SHARED_NETWORK = None
+
+
+def _route_single_trip(args):
+    """Worker function: route one origin-destination trip using the shared network."""
+    origin_node, dest_node, departure_time = args
+    return astar_td(_SHARED_NETWORK, origin_node, dest_node, departure_time)
+
+
+# ============================================================================
 # POPULATION GENERATION
 # ============================================================================
 
@@ -803,6 +819,111 @@ def simulate_traffic(network: CologneNetwork, persons: List[Person], quiet: bool
     return trip_records
 
 
+def simulate_traffic_parallel(network: CologneNetwork, persons: List[Person],
+                               num_workers: int = 0, quiet: bool = False) -> List[TripRecord]:
+    """
+    Parallel version of simulate_traffic.
+
+    Routes ALL agent trips concurrently using a process pool, then accumulates
+    flows sequentially.  On Linux the fork start-method gives workers zero-copy
+    access to the parent's network data via copy-on-write pages.
+
+    This is also more faithful to MATSim semantics: all agents are simulated
+    against the same travel-time snapshot (no intra-iteration feedback).
+    """
+    global _SHARED_NETWORK
+    _SHARED_NETWORK = network          # workers inherit via fork COW
+    network.reset_flows()
+
+    if num_workers <= 0:
+        num_workers = max(1, mp.cpu_count())
+
+    # ── Build task list ──────────────────────────────────────────────────
+    tasks = []
+    task_meta = []  # (person_idx, leg_idx, dep_time, origin_link, dest_link)
+
+    for idx, person in enumerate(persons):
+        plan = person.selected_plan
+        if len(plan.activities) < 3 or len(plan.legs) < 2:
+            continue
+
+        home_act  = plan.activities[0]
+        work_act  = plan.activities[1]
+        home_act2 = plan.activities[2]
+
+        # Trip 1: Home → Work
+        o1 = network.links[home_act.link_id].from_node
+        d1 = network.links[work_act.link_id].from_node
+        t1 = home_act.end_time if home_act.end_time else MEAN_DEPARTURE
+        tasks.append((o1, d1, t1))
+        task_meta.append((idx, 0, t1, home_act.link_id, work_act.link_id))
+
+        # Trip 2: Work → Home
+        o2 = network.links[work_act.link_id].from_node
+        d2 = network.links[home_act2.link_id].from_node
+        t2 = work_act.end_time if work_act.end_time else t1 + WORK_TYPICAL_DURATION
+        tasks.append((o2, d2, t2))
+        task_meta.append((idx, 1, t2, work_act.link_id, home_act2.link_id))
+
+    if not quiet:
+        print(f"    Routing {len(tasks)} trips across {num_workers} workers ...",
+              flush=True)
+
+    # ── Parallel routing ─────────────────────────────────────────────────
+    t_start = time_mod.time()
+
+    try:
+        ctx = mp.get_context('fork')          # zero-copy on Linux
+        chunk = max(1, len(tasks) // (num_workers * 4))
+        with ctx.Pool(num_workers) as pool:
+            results = list(pool.imap(_route_single_trip, tasks, chunksize=chunk))
+    except (RuntimeError, ValueError):
+        # Fallback: sequential (e.g. fork not available)
+        if not quiet:
+            print("    (fork unavailable — falling back to sequential routing)")
+        results = [_route_single_trip(t) for t in tasks]
+
+    elapsed = time_mod.time() - t_start
+    if not quiet:
+        rate = len(tasks) / elapsed if elapsed > 0 else 0
+        print(f"    Routing complete: {elapsed:.1f}s  ({rate:.1f} trips/s)")
+
+    # ── Collect results & accumulate flows ────────────────────────────────
+    trip_records = []
+    for i, (route, route_tt, route_dist) in enumerate(results):
+        person_idx, leg_idx, dep_time, origin_link, dest_link = task_meta[i]
+        person = persons[person_idx]
+        plan = person.selected_plan
+
+        if route:
+            plan.legs[leg_idx].route = route
+            plan.legs[leg_idx].departure_time = dep_time
+            plan.legs[leg_idx].arrival_time = dep_time + route_tt
+            plan.legs[leg_idx].distance = route_dist
+
+            # Accumulate time-binned flows
+            t = dep_time
+            for lid in route:
+                network.add_flow(lid, t)
+                t += network.links[lid].get_travel_time(t)
+
+            trip_records.append(TripRecord(
+                person_id=person.id,
+                departure_time=dep_time,
+                arrival_time=dep_time + route_tt,
+                distance=route_dist,
+                origin_link=origin_link,
+                dest_link=dest_link,
+            ))
+        else:
+            plan.legs[leg_idx].route = []
+            plan.legs[leg_idx].departure_time = dep_time
+            plan.legs[leg_idx].arrival_time = dep_time + 7200
+            plan.legs[leg_idx].distance = 0
+
+    return trip_records
+
+
 # ============================================================================
 # SCORING
 # ============================================================================
@@ -922,13 +1043,15 @@ def compute_kpis(name: str, trips: List[TripRecord], num_agents: int) -> Scenari
 
 def run_scenario(scenario_name: str, coordination_fraction: float,
                  num_agents: int = NUM_AGENTS, num_iterations: int = NUM_ITERATIONS,
-                 network_mode: str = "synthetic", quiet: bool = False) -> ScenarioKPI:
+                 network_mode: str = "synthetic", quiet: bool = False,
+                 routing_workers: int = 0) -> ScenarioKPI:
     _print = (lambda *a, **k: None) if quiet else print
     _print(f"\n{'='*70}")
     _print(f"  SCENARIO: {scenario_name}")
     _print(f"  Network: {network_mode}")
     _print(f"  Coordination: {coordination_fraction*100:.0f}% of agents")
     _print(f"  Agents: {num_agents}, Iterations: {num_iterations}")
+    _print(f"  Routing: {'parallel (' + str(routing_workers or mp.cpu_count()) + ' workers)' if routing_workers != 1 else 'sequential'}")
     _print(f"{'='*70}")
 
     network = CologneNetwork()
@@ -961,9 +1084,14 @@ def run_scenario(scenario_name: str, coordination_fraction: float,
     for iteration in range(num_iterations):
         t0 = time_mod.time()
 
-        trips = simulate_traffic(network, persons, quiet=quiet)
-        if not quiet:
-            print()  # newline after progress bar
+        if routing_workers == 1:
+            trips = simulate_traffic(network, persons, quiet=quiet)
+            if not quiet:
+                print()  # newline after progress bar
+        else:
+            trips = simulate_traffic_parallel(network, persons,
+                                              num_workers=routing_workers,
+                                              quiet=quiet)
         network.update_travel_times_msa(iteration)
 
         for person in persons:
@@ -1065,10 +1193,10 @@ def write_csv(results: List[ScenarioKPI], path: str):
 
 def _run_scenario_worker(args_tuple):
     """Wrapper for multiprocessing — unpacks arguments for run_scenario."""
-    name, fraction, num_agents, num_iterations, network_mode = args_tuple
+    name, fraction, num_agents, num_iterations, network_mode, routing_workers = args_tuple
     return run_scenario(name, fraction, num_agents=num_agents,
                         num_iterations=num_iterations, network_mode=network_mode,
-                        quiet=True)
+                        quiet=True, routing_workers=routing_workers)
 
 
 def main():
@@ -1080,9 +1208,15 @@ def main():
     parser.add_argument("--iterations", type=int, default=NUM_ITERATIONS,
                         help=f"Iterations per scenario (default: {NUM_ITERATIONS})")
     parser.add_argument("--workers", type=int, default=0,
-                        help="Number of parallel workers (0=sequential, default). "
-                             "Set to number of CPU cores (e.g. 5) to run scenarios in parallel.")
+                        help="Number of parallel workers for scenario-level parallelism "
+                             "(0=sequential, default).")
+    parser.add_argument("--routing-workers", type=int, default=0,
+                        help="Number of parallel workers for A* routing within each "
+                             "iteration (0=auto-detect CPUs, 1=sequential). "
+                             "Default: 0 (auto — uses all available cores).")
     args = parser.parse_args()
+
+    routing_w = args.routing_workers if args.routing_workers > 0 else mp.cpu_count()
 
     overall_start = time_mod.time()
 
@@ -1093,7 +1227,8 @@ def main():
     print(f"  Network: {args.network}")
     print(f"  Agents: {args.agents}")
     print(f"  Iterations per scenario: {args.iterations}")
-    print(f"  Workers: {args.workers if args.workers > 0 else 'sequential'}")
+    print(f"  Scenario workers: {args.workers if args.workers > 0 else 'sequential'}")
+    print(f"  Routing workers: {routing_w} (parallel A*)")
     print(f"  Scenarios: Baseline + 4 coordination levels (1%, 2%, 5%, 10%)")
     print()
 
@@ -1111,7 +1246,7 @@ def main():
 
     if args.workers > 0:
         print(f"  Running {len(scenarios)} scenarios in parallel ({args.workers} workers)...")
-        work_items = [(name, fraction, args.agents, args.iterations, args.network)
+        work_items = [(name, fraction, args.agents, args.iterations, args.network, routing_w)
                       for name, fraction in scenarios]
         with ProcessPoolExecutor(max_workers=args.workers) as executor:
             results = list(executor.map(_run_scenario_worker, work_items))
@@ -1119,7 +1254,8 @@ def main():
         results = []
         for name, fraction in scenarios:
             kpi = run_scenario(name, fraction, num_agents=args.agents,
-                               num_iterations=args.iterations, network_mode=args.network)
+                               num_iterations=args.iterations, network_mode=args.network,
+                               routing_workers=routing_w)
             results.append(kpi)
 
     table = format_comparison_table(results)
