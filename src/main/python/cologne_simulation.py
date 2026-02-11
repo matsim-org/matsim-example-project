@@ -28,7 +28,9 @@ Author: Claude (Anthropic) — MATSim Cologne Scenario
 Coordinate system: EPSG:25832 (UTM zone 32N)
 """
 
+import argparse
 import heapq
+import sys
 import math
 import random
 import time as time_mod
@@ -39,6 +41,12 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
+
+# Default path for real OSM data (written by download_cologne_data.py)
+DATA_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "..", "..", "..", "scenarios", "cologne", "data"
+)
 
 # ============================================================================
 # CONFIGURATION
@@ -309,6 +317,109 @@ class CologneNetwork:
 
         print(f"  Network: {len(self.nodes)} nodes, {len(self.links)} links")
         return self
+
+    def load_from_csv(self, nodes_path: str, links_path: str):
+        """
+        Load a real road network from CSV files produced by download_cologne_data.py.
+
+        Files expected:
+          nodes.csv — id, x_utm, y_utm, lat, lon
+          links.csv — id, from_node, to_node, length_m, freespeed_ms,
+                       capacity_veh_hr, lanes, highway, name, osm_way_id
+
+        After loading, removes disconnected components to keep only the
+        largest strongly-connected component (ensures all OD pairs are routable).
+        """
+        print(f"  Loading nodes from {nodes_path} ...")
+        with open(nodes_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                nid = str(row["id"])
+                self.nodes[nid] = Node(nid, float(row["x_utm"]), float(row["y_utm"]))
+
+        print(f"  Loading links from {links_path} ...")
+        with open(links_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                lid = str(row["id"])
+                from_node = str(row["from_node"])
+                to_node = str(row["to_node"])
+
+                # Skip links referencing missing nodes
+                if from_node not in self.nodes or to_node not in self.nodes:
+                    continue
+
+                link = Link(
+                    id=lid,
+                    from_node=from_node,
+                    to_node=to_node,
+                    length=float(row["length_m"]),
+                    freespeed=float(row["freespeed_ms"]),
+                    capacity=float(row["capacity_veh_hr"]),
+                    lanes=int(row["lanes"]),
+                )
+                self.links[lid] = link
+                self.adjacency[from_node].append(lid)
+
+        print(f"  Raw network: {len(self.nodes):,} nodes, {len(self.links):,} links")
+
+        # Extract the largest weakly-connected component so all OD pairs are
+        # routable.  A full SCC is expensive on large graphs; weakly-connected
+        # (treating edges as undirected) is a good practical approximation.
+        self._keep_largest_component()
+
+        # Initialize travel times to free-flow
+        for link in self.links.values():
+            link.bin_travel_times[:] = link.free_flow_time
+
+        print(f"  Network: {len(self.nodes):,} nodes, {len(self.links):,} links")
+        return self
+
+    def _keep_largest_component(self):
+        """Keep only the largest weakly-connected component."""
+        # Build undirected adjacency
+        adj = defaultdict(set)
+        for link in self.links.values():
+            adj[link.from_node].add(link.to_node)
+            adj[link.to_node].add(link.from_node)
+
+        # BFS to find components
+        visited = set()
+        components = []
+        for nid in self.nodes:
+            if nid in visited:
+                continue
+            component = set()
+            queue = [nid]
+            while queue:
+                n = queue.pop()
+                if n in visited:
+                    continue
+                visited.add(n)
+                component.add(n)
+                for neighbor in adj.get(n, []):
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+            components.append(component)
+
+        # Keep the largest
+        largest = max(components, key=len)
+        removed_nodes = set(self.nodes.keys()) - largest
+
+        if removed_nodes:
+            pct = len(removed_nodes) / (len(removed_nodes) + len(largest)) * 100
+            print(f"  Removing {len(removed_nodes):,} disconnected nodes ({pct:.1f}%)")
+            for nid in removed_nodes:
+                del self.nodes[nid]
+            # Remove links that reference removed nodes
+            to_remove = [lid for lid, link in self.links.items()
+                         if link.from_node not in largest or link.to_node not in largest]
+            for lid in to_remove:
+                del self.links[lid]
+            # Rebuild adjacency
+            self.adjacency = defaultdict(list)
+            for lid, link in self.links.items():
+                self.adjacency[link.from_node].append(lid)
 
     def _add_node(self, nid, x, y):
         self.nodes[nid] = Node(nid, x, y)
@@ -782,16 +893,28 @@ def compute_kpis(name: str, trips: List[TripRecord], num_agents: int) -> Scenari
 # ============================================================================
 
 def run_scenario(scenario_name: str, coordination_fraction: float,
-                 num_agents: int = NUM_AGENTS, num_iterations: int = NUM_ITERATIONS) -> ScenarioKPI:
+                 num_agents: int = NUM_AGENTS, num_iterations: int = NUM_ITERATIONS,
+                 network_mode: str = "synthetic") -> ScenarioKPI:
     print(f"\n{'='*70}")
     print(f"  SCENARIO: {scenario_name}")
+    print(f"  Network: {network_mode}")
     print(f"  Coordination: {coordination_fraction*100:.0f}% of agents")
     print(f"  Agents: {num_agents}, Iterations: {num_iterations}")
     print(f"{'='*70}")
 
-    print("\n  Building Cologne network...")
     network = CologneNetwork()
-    network.build()
+    if network_mode == "real":
+        nodes_path = os.path.join(DATA_DIR, "nodes.csv")
+        links_path = os.path.join(DATA_DIR, "links.csv")
+        if not os.path.exists(nodes_path) or not os.path.exists(links_path):
+            print(f"  ERROR: Real network data not found at {DATA_DIR}")
+            print(f"  Run download_cologne_data.py first.")
+            sys.exit(1)
+        print("\n  Loading real Cologne network...")
+        network.load_from_csv(nodes_path, links_path)
+    else:
+        print("\n  Building synthetic Cologne network...")
+        network.build()
 
     print("  Generating population...")
     persons = generate_population(network, num_agents)
@@ -910,14 +1033,24 @@ def write_csv(results: List[ScenarioKPI], path: str):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Cologne Traffic Microsimulation")
+    parser.add_argument("--network", choices=["synthetic", "real"], default="synthetic",
+                        help="Network source: 'synthetic' (built-in) or 'real' (OSM data from download_cologne_data.py)")
+    parser.add_argument("--agents", type=int, default=NUM_AGENTS,
+                        help=f"Number of agents (default: {NUM_AGENTS})")
+    parser.add_argument("--iterations", type=int, default=NUM_ITERATIONS,
+                        help=f"Iterations per scenario (default: {NUM_ITERATIONS})")
+    args = parser.parse_args()
+
     overall_start = time_mod.time()
 
     print("=" * 70)
     print("  COLOGNE AGENT-BASED TRAFFIC MICROSIMULATION")
     print("  MATSim-Equivalent Implementation")
     print("=" * 70)
-    print(f"  Agents: {NUM_AGENTS}")
-    print(f"  Iterations per scenario: {NUM_ITERATIONS}")
+    print(f"  Network: {args.network}")
+    print(f"  Agents: {args.agents}")
+    print(f"  Iterations per scenario: {args.iterations}")
     print(f"  Scenarios: Baseline + 4 coordination levels (1%, 2%, 5%, 10%)")
     print()
 
@@ -935,7 +1068,8 @@ def main():
 
     results = []
     for name, fraction in scenarios:
-        kpi = run_scenario(name, fraction)
+        kpi = run_scenario(name, fraction, num_agents=args.agents,
+                           num_iterations=args.iterations, network_mode=args.network)
         results.append(kpi)
 
     table = format_comparison_table(results)
