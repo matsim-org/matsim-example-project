@@ -30,7 +30,7 @@ public class CologneTrafficDashboard implements Dashboard {
 				);
 				viz.network = data.output("output_network.xml.gz");
 				viz.display.width.columnName = "simulated_traffic_volume";
-				viz.display.width.scaleFactor = 20000d;
+				viz.display.width.scaleFactor = 20000;
 			});
 
 		// Row 2: Link-level statistics table
