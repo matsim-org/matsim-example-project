@@ -30,6 +30,11 @@ public class CologneDashboardProvider implements DashboardProvider {
 	public List<Dashboard> getDashboards(Config config, SimWrapper simWrapper) {
 		List<Dashboard> dashboards = new ArrayList<>();
 
+		// Only activate for Cologne scenario (EPSG:25832), skip for other scenarios like equil
+		if (!"EPSG:25832".equals(config.global().getCoordinateSystem())) {
+			return dashboards;
+		}
+
 		// Cologne trip analysis with mode distribution
 		dashboards.add(Dashboard.customize(new TripDashboard())
 			.context("cologne")
