@@ -707,7 +707,7 @@ def apply_coordination(persons: List[Person], fraction: float, seed: int = 98765
 # MESOSCOPIC TRAFFIC SIMULATION (Time-Dependent)
 # ============================================================================
 
-def simulate_traffic(network: CologneNetwork, persons: List[Person]) -> List[TripRecord]:
+def simulate_traffic(network: CologneNetwork, persons: List[Person], quiet: bool = False) -> List[TripRecord]:
     """
     Mesoscopic traffic simulation with time-dependent routing.
 
@@ -716,8 +716,17 @@ def simulate_traffic(network: CologneNetwork, persons: List[Person]) -> List[Tri
     """
     network.reset_flows()
     trip_records = []
+    total = len(persons)
+    t_start = time_mod.time()
 
-    for person in persons:
+    for idx, person in enumerate(persons):
+        if not quiet and (idx + 1) % 100 == 0:
+            elapsed = time_mod.time() - t_start
+            rate = (idx + 1) / elapsed if elapsed > 0 else 0
+            eta = (total - idx - 1) / rate if rate > 0 else 0
+            print(f"\r    Routing agent {idx+1}/{total} "
+                  f"({rate:.1f} agents/s, ETA {eta:.0f}s)   ", end="", flush=True)
+
         plan = person.selected_plan
         if len(plan.activities) < 3 or len(plan.legs) < 2:
             continue
@@ -952,7 +961,9 @@ def run_scenario(scenario_name: str, coordination_fraction: float,
     for iteration in range(num_iterations):
         t0 = time_mod.time()
 
-        trips = simulate_traffic(network, persons)
+        trips = simulate_traffic(network, persons, quiet=quiet)
+        if not quiet:
+            print()  # newline after progress bar
         network.update_travel_times_msa(iteration)
 
         for person in persons:
