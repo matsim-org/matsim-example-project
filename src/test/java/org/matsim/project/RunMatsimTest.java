@@ -60,10 +60,10 @@ public class RunMatsimTest {
 			RunMatsim.main( args ) ;
 			{
 				Population expected = PopulationUtils.createPopulation( ConfigUtils.createConfig() ) ;
-				PopulationUtils.readPopulation( expected, utils.getInputDirectory() + "/output_plans.xml.gz" );
+				PopulationUtils.readPopulation( expected, utils.getInputDirectory() + "/output_plans.xml.zst" );
 
 				Population actual = PopulationUtils.createPopulation( ConfigUtils.createConfig() ) ;
-				PopulationUtils.readPopulation( actual, utils.getOutputDirectory() + "/output_plans.xml.gz" );
+				PopulationUtils.readPopulation( actual, utils.getOutputDirectory() + "/output_plans.xml.zst" );
 
 				for ( Id<Person> personId : expected.getPersons().keySet()) {
 					double scoreReference = expected.getPersons().get(personId).getSelectedPlan().getScore();
@@ -78,8 +78,8 @@ public class RunMatsimTest {
 				// differ by JDK (e.g. oracle vs. ...).   So not testing this any more for the time being.  kai, jul'23
 			}
 			{
-				String expected = utils.getInputDirectory() + "/output_events.xml.gz" ;
-				String actual = utils.getOutputDirectory() + "/output_events.xml.gz" ;
+				String expected = utils.getInputDirectory() + "/output_events.xml.zst" ;
+				String actual = utils.getOutputDirectory() + "/output_events.xml.zst" ;
 				ComparisonResult result = EventsUtils.compareEventsFiles( expected, actual );
 				assertEquals( ComparisonResult.FILES_ARE_EQUAL, result );
 			}

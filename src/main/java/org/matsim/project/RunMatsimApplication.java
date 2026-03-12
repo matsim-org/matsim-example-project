@@ -33,7 +33,6 @@ import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 public class RunMatsimApplication extends MATSimApplication {
 
 	public RunMatsimApplication() {
-		super("scenarios/equil/config.xml");
 	}
 
 	public static void main(String[] args) {
